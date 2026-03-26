@@ -294,7 +294,7 @@ async def create_inspection_request(request: InspectionRequestCreate, buyer_id: 
     inspectors = await db.inspector_profiles.find({
         "id_verified": True,
         "location_lat": {"$ne": None}
-    }, {"_id": 0}).to_list(1000)
+    }, {"_id": 0, "user_id": 1, "location_lat": 1, "location_lng": 1, "radius_miles": 1}).to_list(1000)
     
     for inspector in inspectors:
         # Simple distance calculation (in production, use proper geo query)
