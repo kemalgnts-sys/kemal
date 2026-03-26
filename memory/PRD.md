@@ -92,10 +92,49 @@ DoorDash/UberEats'ten ilham alan uzaktan araç kontrol platformu. Uzaktaki bir a
 - [ ] AI destekli araç değerlendirmesi
 
 ## Tech Stack
+
+### Web Application
 - **Frontend:** React 19, Tailwind CSS, Leaflet (OpenStreetMap)
 - **Backend:** FastAPI, Motor (MongoDB async driver)
 - **Database:** MongoDB
 - **Maps:** Leaflet with OpenStreetMap (ücretsiz)
+
+### Mobile Application (Jan 26, 2026)
+- **Framework:** React Native + Expo
+- **Navigation:** React Navigation (Stack + Bottom Tabs)
+- **Maps:** React Native Maps
+- **Camera:** Expo Camera + Image Picker
+- **Storage:** Expo Secure Store
+- **Notifications:** Expo Notifications (ready for push)
+- **Localization:** i18n-js (English, Spanish, Turkish)
+
+## Mobile App Features Implemented
+- ✅ Welcome/Landing screen with hero image
+- ✅ Login/Register with user type selection
+- ✅ Buyer Dashboard with inspection list
+- ✅ Inspector Dashboard with map + list view
+- ✅ New Inspection form (4-step wizard)
+- ✅ Job Detail with security code entry
+- ✅ Step-by-step inspection UI with camera
+- ✅ Report submission flow
+- ✅ Notifications screen
+- ✅ Settings with language selector
+- ✅ 3 Language support (EN/ES/TR)
+- ✅ Native camera for photo capture
+- ✅ Dark theme (Amber + Black)
+
+## Mobile App Structure
+```
+/app/mobile/
+├── App.js                 # Main app with navigation
+├── app.json              # Expo configuration
+├── src/
+│   ├── config/           # API URL, colors, constants
+│   ├── context/          # Auth context
+│   ├── i18n/             # Translations (EN/ES/TR)
+│   ├── screens/          # All screen components
+│   └── services/         # API service layer
+```
 
 ## API Endpoints
 ```

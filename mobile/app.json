@@ -1,0 +1,70 @@
+{
+  "expo": {
+    "name": "AutoCheck",
+    "slug": "autocheck",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A0A0A"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.autocheck.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "AutoCheck needs camera access to take vehicle inspection photos",
+        "NSPhotoLibraryUsageDescription": "AutoCheck needs photo library access to save inspection photos",
+        "NSLocationWhenInUseUsageDescription": "AutoCheck needs your location to find nearby inspection jobs"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0A0A0A"
+      },
+      "package": "com.autocheck.app",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow AutoCheck to access your camera for vehicle inspection photos"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow AutoCheck to access your photos for inspection uploads"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow AutoCheck to use your location to find nearby jobs"
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id"
+      }
+    }
+  }
+}
