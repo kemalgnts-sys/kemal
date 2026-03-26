@@ -1,0 +1,117 @@
+{
+  "theme_and_archetype": {
+    "domain": "Hybrid Fullstack (Marketplace / Gig Economy)",
+    "theme": "DARK",
+    "archetype": "High-Contrast Utility (Archetype 4) merged with Athletic/Pro (Archetype 2)",
+    "vibe": "Night-mode DoorDash. Trustworthy, hyper-efficient, tactile, and eye-catching.",
+    "rationale": "The user requested an UberEats/DoorDash inspired app using an Amber Yellow and Black color scheme. This demands a dark theme with deep obsidian black to reduce glare for gig workers, paired with a high-visibility, energetic Amber accent for conversion and active states. It prioritizes function, speed, and clear typography."
+  },
+  "color_system": {
+    "primary": {
+      "DEFAULT": "#FFBF00",
+      "hover": "#FFD147",
+      "foreground": "#0A0A0A",
+      "description": "Amber Yellow. Use strictly for primary CTAs (Accept Job, Pay), active map pins, and glowing progress indicators."
+    },
+    "background": {
+      "DEFAULT": "#0A0A0A",
+      "card": "#141414",
+      "elevated": "#1A1A1A",
+      "description": "Deep obsidian black to save OLED battery and provide maximum contrast. Never use pure #000000, always tint slightly."
+    },
+    "border": {
+      "DEFAULT": "#262626",
+      "focus": "#FFBF00",
+      "description": "High-contrast structural grid lines."
+    },
+    "text": {
+      "DEFAULT": "#FFFFFF",
+      "muted": "#A3A3A3",
+      "accent": "#FFBF00"
+    },
+    "status": {
+      "success": "#34C759",
+      "warning": "#FF9F0A",
+      "error": "#FF453A",
+      "info": "#0A84FF"
+    }
+  },
+  "typography": {
+    "rules": "BANNED: Inter, Roboto, Open Sans. Use tight tracking for headings.",
+    "heading_font": "Outfit",
+    "heading_classes": "font-sans font-bold tracking-tight text-white",
+    "body_font": "Manrope",
+    "body_classes": "font-sans text-gray-300 leading-relaxed",
+    "mono_font": "JetBrains Mono",
+    "mono_classes": "font-mono tracking-widest",
+    "scales": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tighter leading-none",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight",
+      "h3": "text-xl sm:text-2xl",
+      "body": "text-base",
+      "small": "text-sm text-[#A3A3A3]",
+      "overline": "text-xs font-bold uppercase tracking-[0.2em] text-[#FFBF00]"
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Generous spacing. Tactile elements. Mobile-first hierarchy.",
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "bento_grid": "grid grid-cols-1 md:grid-cols-12 gap-6",
+    "dashboard_grid": "grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4",
+    "padding": "Containers with borders MUST use p-6 or p-8 to prevent text collision."
+  },
+  "surface_strategies": {
+    "headers": "Crystal Glass. bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-[#262626].",
+    "cards": "Solid flat bg-[#141414], rounded-2xl, border border-[#262626]. NO soft shadows. Use sharp 1px borders.",
+    "interactive_cards": "Hover: border-[#FFBF00]/50 -translate-y-1 transition-transform duration-200.",
+    "inputs": "bg-[#0A0A0A] border-2 border-[#262626] rounded-xl focus:border-[#FFBF00] focus:ring-1 focus:ring-[#FFBF00].",
+    "premium_card": "The 'Professional ($300)' package card should have a glowing 'Tracing Beam' effect or a solid 2px border of #FFBF00 with a subtle drop-shadow-[0_0_15px_rgba(255,191,0,0.15)]."
+  },
+  "component_rules": {
+    "buttons": "Pill-shaped or rounded-xl (rounded-xl preferred for structural look). Primary button is pure #FFBF00 with #0A0A0A text. Font-bold. Active state scales down slightly (scale-95).",
+    "map": "Leaflet integration. CRITICAL: Standard OpenStreetMap tiles are bright white/green and will ruin the dark mode. Apply CSS filter on the Leaflet tile layer if a dark tileset isn't available: 'filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);'. Use a custom SVG icon for pins (Amber Yellow #FFBF00).",
+    "security_code_input": "Use a 6-digit OTP UI layout. 6 individual square boxes (w-14 h-14), text-center, text-2xl font-mono. border-[#262626] focus:border-[#FFBF00].",
+    "step_by_step_camera": "Use Shadcn Tabs or a vertical Stepper component to guide the inspector (Front, Back, Interior, Engine, VIN).",
+    "icons": "Use lucide-react. Stroke width 2 or 2.5 for a bold, legible look."
+  },
+  "media_urls": {
+    "hero_background": {
+      "url": "https://images.unsplash.com/photo-1623659248894-1a0272243054?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHw0fHx5ZWxsb3clMjBzcG9ydHMlMjBjYXIlMjBuaWdodHxlbnwwfHx8fDE3NzQ1NjE3OTh8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Yellow sports car at night. Use as landing page hero background. CRITICAL: Add overlay bg-black/70 so white/amber text is clearly readable."
+    },
+    "inspector_action": {
+      "url": "https://images.pexels.com/photos/4895408/pexels-photo-4895408.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Young man checking car engine. Use in the 'Become an Inspector' or 'How it works' section."
+    },
+    "map_placeholder": {
+      "url": "https://images.unsplash.com/photo-1542382189-f2600a163c2f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODF8MHwxfHNlYXJjaHwzfHxjaXR5JTIwc3RyZWV0JTIwbWFwJTIwZGFyayUyMG5pZ2h0fGVufDB8fHx8MTc3NDU2MTc5N3ww&ixlib=rb-4.1.0&q=85",
+      "description": "Areal view of city lights at night. Can be used as a placeholder background behind the map container before map loads."
+    }
+  },
+  "motion_and_interactions": {
+    "hover": "Explicit hover states on all interactive elements. Buttons brighten (hover:brightness-110). Cards get a border highlight.",
+    "page_transitions": "Fade and slight slide-up (framer-motion initial={{opacity:0, y:10}} animate={{opacity:1, y:0}}).",
+    "map_markers": "Map pins should pulse gently to indicate live jobs."
+  },
+  "page_specific_instructions": {
+    "landing_page": {
+      "layout": "Massive Hero Section with the 'Yellow sports car' bg. High-contrast typography. Bento grid below showing dual value props: 'Inspect a Car Anywhere' (Buyer) and 'Earn by Inspecting' (Inspector).",
+      "ctas": "Two main CTAs: 'Request Inspection' (Primary #FFBF00) and 'Become an Inspector' (Outline/Ghost white)."
+    },
+    "buyer_dashboard": {
+      "layout": "Control Room grid. Top widget: Active requests and live status timeline. Main area: Form to create new request (Vehicle Info -> Location -> Package Selection -> Tip).",
+      "pricing_cards": "Display Basic ($100), Premium ($250), Professional ($300) in a 3-column bento. Professional card MUST be highlighted with Amber border.",
+      "testing": "All form inputs and submit buttons MUST have data-testid attributes (e.g., data-testid='buyer-car-make-input')."
+    },
+    "inspector_dashboard": {
+      "layout": "Split view / Hybrid App style. Top 50vh is the Leaflet Map showing nearby jobs. Bottom 50vh is a scrollable list of job cards (Job title, distance, payout).",
+      "job_flow": "Clicking a job opens a Modal/Drawer. Clicking 'Accept' transitions to the Inspection UI. Inspection UI requires 6-digit Security Code input to start.",
+      "inspection_ui": "Focused, distraction-free view. Step-by-step instructions. Big camera placeholder buttons.",
+      "testing": "Map markers, Accept buttons, and the 6-digit code inputs MUST have data-testid attributes."
+    }
+  },
+  "testing_and_accessibility": {
+    "data_testid": "MANDATORY. Add data-testid to every interactive element (buttons, tabs, inputs, map-pins). Format: kebab-case, role-based.",
+    "contrast": "Text over backgrounds MUST meet APCA guidelines. Use Text-shadow on hero texts if needed."
+  }
+}
