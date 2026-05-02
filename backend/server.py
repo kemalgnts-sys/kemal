@@ -177,6 +177,29 @@ INSPECTION_STEPS = [
 def generate_security_code():
     return ''.join(random.choices(string.digits, k=6))
 
+def available_inspection_payload(inspection: dict, distance_miles: float) -> dict:
+    payload = {
+        "id": inspection["id"],
+        "vehicle": inspection["vehicle"],
+        "seller": {
+            "name": inspection["seller"]["name"],
+            "city": inspection["seller"]["city"],
+            "state": inspection["seller"]["state"],
+            "lat": inspection["seller"]["lat"],
+            "lng": inspection["seller"]["lng"],
+        },
+        "package_type": inspection["package_type"],
+        "package_price": inspection["package_price"],
+        "tip_amount": inspection["tip_amount"],
+        "total_amount": inspection["total_amount"],
+        "status": inspection["status"],
+        "created_at": inspection["created_at"],
+        "preferred_date": inspection.get("preferred_date"),
+        "notes": inspection.get("notes"),
+        "distance_miles": distance_miles,
+    }
+    return payload
+
 # ============== AUTH ROUTES ==============
 
 @api_router.post("/auth/register", response_model=UserResponse)
@@ -330,8 +353,7 @@ async def get_available_inspections(inspector_lat: float = 41.8781, inspector_ln
         seller_lng = inspection["seller"]["lng"]
         distance = ((seller_lat - inspector_lat)**2 + (seller_lng - inspector_lng)**2)**0.5 * 69
         if distance <= radius:
-            inspection["distance_miles"] = round(distance, 1)
-            nearby.append(inspection)
+            nearby.append(available_inspection_payload(inspection, round(distance, 1)))
     
     return sorted(nearby, key=lambda x: x["distance_miles"])
 
@@ -458,15 +480,21 @@ async def complete_step(inspection_id: str, step_name: str, notes: str = ""):
 
 @api_router.post("/inspections/{inspection_id}/submit-report")
 async def submit_report(inspection_id: str, report: InspectionReportCreate):
+    if report.inspection_id != inspection_id:
+        raise HTTPException(status_code=400, detail="Report inspection_id does not match path")
+    
     inspection = await db.inspections.find_one({"id": inspection_id}, {"_id": 0})
     if not inspection:
         raise HTTPException(status_code=404, detail="Inspection not found")
     
+    if inspection["status"] == "completed":
+        raise HTTPException(status_code=409, detail="Inspection report already submitted")
+    
     completed_at = datetime.now(timezone.utc).isoformat()
     
-    # Create report document
+    report_id = str(uuid.uuid4())
     report_doc = {
-        "id": str(uuid.uuid4()),
+        "id": report_id,
         "inspection_id": inspection_id,
         "inspector_id": inspection["inspector_id"],
         "buyer_id": inspection["buyer_id"],
@@ -476,13 +504,16 @@ async def submit_report(inspection_id: str, report: InspectionReportCreate):
         "recommendation": report.recommendation,
         "created_at": completed_at
     }
-    await db.reports.insert_one(report_doc)
     
-    # Update inspection status
-    await db.inspections.update_one(
-        {"id": inspection_id},
+    # Claim completion first so repeated submits cannot create duplicate reports or earnings.
+    update_result = await db.inspections.update_one(
+        {"id": inspection_id, "status": {"$ne": "completed"}},
         {"$set": {"status": "completed", "completed_at": completed_at}}
     )
+    if update_result.matched_count == 0:
+        raise HTTPException(status_code=409, detail="Inspection report already submitted")
+    
+    await db.reports.insert_one(report_doc)
     
     # Update inspector stats
     await db.inspector_profiles.update_one(
@@ -508,7 +539,7 @@ async def submit_report(inspection_id: str, report: InspectionReportCreate):
     }
     await db.notifications.insert_one(notification)
     
-    return {"message": "Report submitted successfully", "report_id": report_doc["id"]}
+    return {"message": "Report submitted successfully", "report_id": report_id}
 
 @api_router.get("/reports/{report_id}")
 async def get_report(report_id: str):
