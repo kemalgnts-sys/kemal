@@ -322,7 +322,10 @@ async def get_buyer_inspections(buyer_id: str):
 
 @api_router.get("/inspections/available")
 async def get_available_inspections(inspector_lat: float = 41.8781, inspector_lng: float = -87.6298, radius: int = 50):
-    inspections = await db.inspections.find({"status": "pending"}, {"_id": 0}).to_list(100)
+    inspections = await db.inspections.find(
+        {"status": "pending"},
+        {"_id": 0, "security_code": 0}
+    ).to_list(100)
     
     nearby = []
     for inspection in inspections:
