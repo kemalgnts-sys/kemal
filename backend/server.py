@@ -347,11 +347,20 @@ async def accept_inspection(inspection_id: str, inspector_id: str):
     inspector = await db.users.find_one({"id": inspector_id}, {"_id": 0})
     if not inspector:
         raise HTTPException(status_code=404, detail="Inspector not found")
+    if inspector.get("user_type") != "inspector":
+        raise HTTPException(status_code=400, detail="User is not an inspector")
+
+    inspector_profile = await db.inspector_profiles.find_one(
+        {"user_id": inspector_id},
+        {"_id": 0, "id_verified": 1}
+    )
+    if not inspector_profile or not inspector_profile.get("id_verified"):
+        raise HTTPException(status_code=403, detail="Inspector must be verified to accept jobs")
     
     accepted_at = datetime.now(timezone.utc).isoformat()
     
-    await db.inspections.update_one(
-        {"id": inspection_id},
+    result = await db.inspections.update_one(
+        {"id": inspection_id, "status": "pending"},
         {"$set": {
             "status": "accepted",
             "inspector_id": inspector_id,
@@ -359,6 +368,8 @@ async def accept_inspection(inspection_id: str, inspector_id: str):
             "accepted_at": accepted_at
         }}
     )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=400, detail="Inspection already accepted")
     
     # Notify buyer
     notification = {
