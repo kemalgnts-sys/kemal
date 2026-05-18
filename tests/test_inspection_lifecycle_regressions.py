@@ -1,6 +1,7 @@
 import copy
 import importlib
 import os
+import asyncio
 
 import pytest
 from fastapi import HTTPException
@@ -115,8 +116,11 @@ def report_payload():
     )
 
 
-@pytest.mark.asyncio
-async def test_submit_report_is_idempotent_for_retries(fake_db):
+def test_submit_report_is_idempotent_for_retries(fake_db):
+    asyncio.run(_submit_report_is_idempotent_for_retries(fake_db))
+
+
+async def _submit_report_is_idempotent_for_retries(fake_db):
     fake_db.inspections.docs.append(inspection_doc())
     fake_db.inspector_profiles.docs.append(
         {"user_id": "inspector-1", "total_inspections": 0, "earnings": 0.0}
@@ -132,8 +136,11 @@ async def test_submit_report_is_idempotent_for_retries(fake_db):
     assert fake_db.inspector_profiles.docs[0]["earnings"] == 80.0
 
 
-@pytest.mark.asyncio
-async def test_complete_step_rejects_invalid_step_without_advancing(fake_db):
+def test_complete_step_rejects_invalid_step_without_advancing(fake_db):
+    asyncio.run(_complete_step_rejects_invalid_step_without_advancing(fake_db))
+
+
+async def _complete_step_rejects_invalid_step_without_advancing(fake_db):
     fake_db.inspection_progress.docs.append(
         {
             "inspection_id": "inspection-1",
@@ -168,8 +175,11 @@ async def test_complete_step_rejects_invalid_step_without_advancing(fake_db):
     assert progress["steps"][0]["notes"] == "front still ok"
 
 
-@pytest.mark.asyncio
-async def test_verify_security_code_does_not_duplicate_or_reset_progress(fake_db):
+def test_verify_security_code_does_not_duplicate_or_reset_progress(fake_db):
+    asyncio.run(_verify_security_code_does_not_duplicate_or_reset_progress(fake_db))
+
+
+async def _verify_security_code_does_not_duplicate_or_reset_progress(fake_db):
     fake_db.inspections.docs.append(inspection_doc(status="accepted"))
 
     await server.verify_security_code("inspection-1", "123456")
