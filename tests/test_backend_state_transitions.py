@@ -1,3 +1,4 @@
+import asyncio
 import copy
 import os
 from types import SimpleNamespace
@@ -180,19 +181,17 @@ def make_progress(**overrides):
     return progress
 
 
-@pytest.mark.asyncio
-async def test_available_inspections_do_not_expose_security_code(monkeypatch):
+def test_available_inspections_do_not_expose_security_code(monkeypatch):
     fake_db = FakeDB(inspections=[make_inspection()])
     monkeypatch.setattr(server, "db", fake_db)
 
-    jobs = await server.get_available_inspections(inspector_lat=41.8781, inspector_lng=-87.6298)
+    jobs = asyncio.run(server.get_available_inspections(inspector_lat=41.8781, inspector_lng=-87.6298))
 
     assert len(jobs) == 1
     assert "security_code" not in jobs[0]
 
 
-@pytest.mark.asyncio
-async def test_accept_requires_verified_inspector_and_only_notifies_once(monkeypatch):
+def test_accept_requires_verified_inspector_and_only_notifies_once(monkeypatch):
     fake_db = FakeDB(
         users=[
             {
@@ -215,26 +214,25 @@ async def test_accept_requires_verified_inspector_and_only_notifies_once(monkeyp
     monkeypatch.setattr(server, "db", fake_db)
 
     with pytest.raises(HTTPException) as exc_info:
-        await server.accept_inspection("inspection-1", "inspector-1")
+        asyncio.run(server.accept_inspection("inspection-1", "inspector-1"))
     assert exc_info.value.status_code == 403
 
     fake_db.inspector_profiles.docs[0]["id_verified"] = True
-    accepted = await server.accept_inspection("inspection-1", "inspector-1")
+    accepted = asyncio.run(server.accept_inspection("inspection-1", "inspector-1"))
     assert accepted["inspector_id"] == "inspector-1"
 
     with pytest.raises(HTTPException) as exc_info:
-        await server.accept_inspection("inspection-1", "inspector-2")
+        asyncio.run(server.accept_inspection("inspection-1", "inspector-2"))
     assert exc_info.value.status_code == 400
     assert len(fake_db.notifications.docs) == 1
 
 
-@pytest.mark.asyncio
-async def test_verify_code_is_idempotent_and_does_not_duplicate_progress(monkeypatch):
+def test_verify_code_is_idempotent_and_does_not_duplicate_progress(monkeypatch):
     fake_db = FakeDB(inspections=[make_inspection(status="accepted", inspector_id="inspector-1")])
     monkeypatch.setattr(server, "db", fake_db)
 
-    first_response = await server.verify_security_code("inspection-1", "123456")
-    second_response = await server.verify_security_code("inspection-1", "123456")
+    first_response = asyncio.run(server.verify_security_code("inspection-1", "123456"))
+    second_response = asyncio.run(server.verify_security_code("inspection-1", "123456"))
 
     assert first_response["steps"]
     assert second_response["steps"]
@@ -242,8 +240,7 @@ async def test_verify_code_is_idempotent_and_does_not_duplicate_progress(monkeyp
     assert len(fake_db.inspection_progress.docs) == 1
 
 
-@pytest.mark.asyncio
-async def test_submit_report_is_idempotent_and_pays_once(monkeypatch):
+def test_submit_report_is_idempotent_and_pays_once(monkeypatch):
     fake_db = FakeDB(
         inspections=[make_inspection(status="in_progress", inspector_id="inspector-1")],
         inspection_progress=[make_progress()],
@@ -257,8 +254,8 @@ async def test_submit_report_is_idempotent_and_pays_once(monkeypatch):
         recommendation="buy",
     )
 
-    first_response = await server.submit_report("inspection-1", report)
-    second_response = await server.submit_report("inspection-1", report)
+    first_response = asyncio.run(server.submit_report("inspection-1", report))
+    second_response = asyncio.run(server.submit_report("inspection-1", report))
 
     assert first_response["report_id"] == second_response["report_id"]
     assert len(fake_db.reports.docs) == 1
@@ -266,12 +263,11 @@ async def test_submit_report_is_idempotent_and_pays_once(monkeypatch):
     assert fake_db.inspector_profiles.docs[0]["earnings"] == 200.0
 
 
-@pytest.mark.asyncio
-async def test_complete_step_without_progress_returns_404(monkeypatch):
+def test_complete_step_without_progress_returns_404(monkeypatch):
     fake_db = FakeDB()
     monkeypatch.setattr(server, "db", fake_db)
 
     with pytest.raises(HTTPException) as exc_info:
-        await server.complete_step("missing-inspection", "exterior_front")
+        asyncio.run(server.complete_step("missing-inspection", "exterior_front"))
 
     assert exc_info.value.status_code == 404
