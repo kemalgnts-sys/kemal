@@ -1644,7 +1644,7 @@ const JobDetailModal = ({ job, onClose, onAccept, isInspector, userId }) => {
   const handleCompleteStep = async () => {
     setLoading(true);
     try {
-      await axios.post(`${API}/inspections/${job.id}/complete-step?step_name=${steps[currentStep].name}&notes=${notes}`);
+      await axios.post(`${API}/inspections/${job.id}/complete-step?step_name=${steps[currentStep].name}&notes=${encodeURIComponent(notes)}`);
       setNotes('');
       if (currentStep < steps.length - 1) {
         setCurrentStep(currentStep + 1);
