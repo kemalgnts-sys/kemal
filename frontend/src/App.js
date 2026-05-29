@@ -796,7 +796,14 @@ const InspectionForm = ({ onClose, onSuccess, userId }) => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      await axios.post(`${API}/inspections?buyer_id=${userId}`, formData);
+      const payload = {
+        ...formData,
+        vehicle: {
+          ...formData.vehicle,
+          mileage: String(formData.vehicle.mileage).trim() === '' ? null : Number(formData.vehicle.mileage)
+        }
+      };
+      await axios.post(`${API}/inspections?buyer_id=${userId}`, payload);
       onSuccess();
     } catch (e) {
       console.error('Error creating inspection:', e);

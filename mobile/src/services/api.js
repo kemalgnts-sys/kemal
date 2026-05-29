@@ -72,7 +72,8 @@ export const inspectionsApi = {
     });
     
     const response = await api.post(`/inspections/${inspectionId}/upload-photo`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      transformRequest: (data) => data,
+      headers: { 'Content-Type': undefined },
     });
     return response.data;
   },
