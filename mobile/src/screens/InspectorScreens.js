@@ -418,13 +418,14 @@ export const JobDetailScreen = ({ route, navigation }) => {
     });
 
     if (!result.canceled && result.assets[0]) {
-      setPhotos([...photos, result.assets[0].uri]);
+      const photoUri = result.assets[0].uri;
       
-      // Upload photo
       try {
-        await inspectionsApi.uploadPhoto(job.id, steps[currentStep].name, result.assets[0].uri);
+        await inspectionsApi.uploadPhoto(job.id, steps[currentStep].name, photoUri);
+        setPhotos((currentPhotos) => [...currentPhotos, photoUri]);
       } catch (e) {
         console.error('Error uploading photo:', e);
+        Alert.alert(t('error'), 'Photo upload failed. Please try again.');
       }
     }
   };
