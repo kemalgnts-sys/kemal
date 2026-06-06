@@ -1,3 +1,4 @@
+import asyncio
 import copy
 import io
 import os
@@ -192,6 +193,10 @@ def make_report():
     )
 
 
+def run(coro):
+    return asyncio.run(coro)
+
+
 @pytest.fixture
 def fake_db(monkeypatch):
     db = FakeDB()
@@ -199,12 +204,11 @@ def fake_db(monkeypatch):
     return db
 
 
-@pytest.mark.asyncio
-async def test_available_and_inspector_jobs_do_not_expose_security_code(fake_db):
+def test_available_and_inspector_jobs_do_not_expose_security_code(fake_db):
     fake_db.inspections.docs.append(make_inspection(inspector_id="inspector-1"))
 
-    available = await server.get_available_inspections()
-    inspector_jobs = await server.get_inspector_jobs("inspector-1")
+    available = run(server.get_available_inspections())
+    inspector_jobs = run(server.get_inspector_jobs("inspector-1"))
 
     assert available
     assert inspector_jobs
@@ -212,18 +216,17 @@ async def test_available_and_inspector_jobs_do_not_expose_security_code(fake_db)
     assert "security_code" not in inspector_jobs[0]
 
 
-@pytest.mark.asyncio
-async def test_accept_inspection_is_status_gated_and_does_not_overwrite_assignment(fake_db):
+def test_accept_inspection_is_status_gated_and_does_not_overwrite_assignment(fake_db):
     fake_db.users.docs.extend([
         {"id": "inspector-1", "full_name": "First Inspector"},
         {"id": "inspector-2", "full_name": "Second Inspector"},
     ])
     fake_db.inspections.docs.append(make_inspection())
 
-    first = await server.accept_inspection("inspection-1", "inspector-1")
+    first = run(server.accept_inspection("inspection-1", "inspector-1"))
 
     with pytest.raises(HTTPException) as exc:
-        await server.accept_inspection("inspection-1", "inspector-2")
+        run(server.accept_inspection("inspection-1", "inspector-2"))
 
     assert exc.value.status_code == 400
     assert first["inspector_id"] == "inspector-1"
@@ -231,33 +234,31 @@ async def test_accept_inspection_is_status_gated_and_does_not_overwrite_assignme
     assert len(fake_db.notifications.docs) == 1
 
 
-@pytest.mark.asyncio
-async def test_verify_code_requires_accepted_status_and_is_idempotent(fake_db):
+def test_verify_code_requires_accepted_status_and_is_idempotent(fake_db):
     fake_db.inspections.docs.append(make_inspection())
 
     with pytest.raises(HTTPException) as exc:
-        await server.verify_security_code("inspection-1", "123456")
+        run(server.verify_security_code("inspection-1", "123456"))
 
     assert exc.value.status_code == 400
     fake_db.inspections.docs[0]["status"] = "accepted"
 
-    await server.verify_security_code("inspection-1", "123456")
-    await server.verify_security_code("inspection-1", "123456")
+    run(server.verify_security_code("inspection-1", "123456"))
+    run(server.verify_security_code("inspection-1", "123456"))
 
     assert fake_db.inspections.docs[0]["status"] == "in_progress"
     assert len(fake_db.inspection_progress.docs) == 1
 
 
-@pytest.mark.asyncio
-async def test_complete_step_missing_progress_404_and_repeat_does_not_skip_steps(fake_db):
+def test_complete_step_missing_progress_404_and_repeat_does_not_skip_steps(fake_db):
     with pytest.raises(HTTPException) as exc:
-        await server.complete_step("inspection-1", "exterior_front")
+        run(server.complete_step("inspection-1", "exterior_front"))
 
     assert exc.value.status_code == 404
 
     fake_db.inspection_progress.docs.append(server.build_progress_doc("inspection-1"))
-    await server.complete_step("inspection-1", "exterior_front", "first")
-    await server.complete_step("inspection-1", "exterior_front", "repeat")
+    run(server.complete_step("inspection-1", "exterior_front", "first"))
+    run(server.complete_step("inspection-1", "exterior_front", "repeat"))
 
     progress = fake_db.inspection_progress.docs[0]
     assert progress["steps"][0]["completed"] is True
@@ -265,13 +266,12 @@ async def test_complete_step_missing_progress_404_and_repeat_does_not_skip_steps
     assert progress["current_step"] == 1
 
 
-@pytest.mark.asyncio
-async def test_submit_report_is_idempotent_and_pays_inspector_once(fake_db):
+def test_submit_report_is_idempotent_and_pays_inspector_once(fake_db):
     fake_db.inspections.docs.append(make_inspection(status="in_progress", inspector_id="inspector-1"))
     fake_db.inspector_profiles.docs.append({"user_id": "inspector-1", "total_inspections": 0, "earnings": 0.0})
 
-    first = await server.submit_report("inspection-1", make_report())
-    second = await server.submit_report("inspection-1", make_report())
+    first = run(server.submit_report("inspection-1", make_report()))
+    second = run(server.submit_report("inspection-1", make_report()))
 
     assert first["report_id"] == second["report_id"]
     assert len(fake_db.reports.docs) == 1
@@ -280,26 +280,25 @@ async def test_submit_report_is_idempotent_and_pays_inspector_once(fake_db):
     assert len(fake_db.notifications.docs) == 1
 
 
-@pytest.mark.asyncio
-async def test_upload_photo_rejects_invalid_steps_and_sanitizes_extension(fake_db, tmp_path, monkeypatch):
+def test_upload_photo_rejects_invalid_steps_and_sanitizes_extension(fake_db, tmp_path, monkeypatch):
     monkeypatch.setattr(server, "UPLOADS_DIR", tmp_path)
 
     with pytest.raises(HTTPException) as exc:
-        await server.upload_inspection_photo(
+        run(server.upload_inspection_photo(
             "inspection-1",
             "../../evil",
             type("Upload", (), {"filename": "photo.jpg", "file": io.BytesIO(b"bad")})(),
-        )
+        ))
 
     assert exc.value.status_code == 400
     assert not list(tmp_path.iterdir())
 
     fake_db.inspection_progress.docs.append(server.build_progress_doc("inspection-1"))
-    response = await server.upload_inspection_photo(
+    response = run(server.upload_inspection_photo(
         "inspection-1",
         "exterior_front",
         type("Upload", (), {"filename": "../../../shell.php", "file": io.BytesIO(b"image")})(),
-    )
+    ))
 
     assert ".." not in response["photo_url"]
     assert response["photo_url"].endswith(".jpg")
