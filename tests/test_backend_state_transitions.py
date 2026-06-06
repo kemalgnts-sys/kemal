@@ -107,6 +107,9 @@ class FakeCollection:
         parts = path.split(".")
         for index, part in enumerate(parts):
             if isinstance(current, list):
+                if part.isdigit():
+                    current = current[int(part)]
+                    continue
                 remaining = ".".join(parts[index:])
                 for item in current:
                     found = self._get_path(item, remaining)
