@@ -1630,7 +1630,7 @@ const JobDetailModal = ({ job, onClose, onAccept, isInspector, userId }) => {
 
     setLoading(true);
     try {
-      await axios.post(`${API}/inspections/${job.id}/verify-code?code=${code}`);
+      await axios.post(`${API}/inspections/${job.id}/verify-code?code=${code}&inspector_id=${userId}`);
       setCodeVerified(true);
       fetchProgress();
       setToast({ message: 'Kod doğrulandı! Kontrole başlayabilirsiniz.', type: 'success' });
@@ -1661,7 +1661,7 @@ const JobDetailModal = ({ job, onClose, onAccept, isInspector, userId }) => {
   const handleSubmitReport = async () => {
     setLoading(true);
     try {
-      await axios.post(`${API}/inspections/${job.id}/submit-report`, {
+      await axios.post(`${API}/inspections/${job.id}/submit-report?inspector_id=${userId}`, {
         inspection_id: job.id,
         steps: progress?.steps || [],
         overall_notes: notes,

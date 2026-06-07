@@ -52,8 +52,8 @@ export const inspectionsApi = {
     return response.data;
   },
   
-  verifyCode: async (inspectionId, code) => {
-    const response = await api.post(`/inspections/${inspectionId}/verify-code?code=${code}`);
+  verifyCode: async (inspectionId, code, inspectorId) => {
+    const response = await api.post(`/inspections/${inspectionId}/verify-code?code=${code}&inspector_id=${inspectorId}`);
     return response.data;
   },
   
@@ -82,8 +82,8 @@ export const inspectionsApi = {
     return response.data;
   },
   
-  submitReport: async (inspectionId, data) => {
-    const response = await api.post(`/inspections/${inspectionId}/submit-report`, data);
+  submitReport: async (inspectionId, inspectorId, data) => {
+    const response = await api.post(`/inspections/${inspectionId}/submit-report?inspector_id=${inspectorId}`, data);
     return response.data;
   },
 };

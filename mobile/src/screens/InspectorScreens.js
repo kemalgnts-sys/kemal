@@ -394,7 +394,7 @@ export const JobDetailScreen = ({ route, navigation }) => {
 
     setLoading(true);
     try {
-      await inspectionsApi.verifyCode(job.id, code);
+      await inspectionsApi.verifyCode(job.id, code, user.id);
       setCodeVerified(true);
       fetchProgress();
       Alert.alert(t('success'), 'Code verified! You can start the inspection.');
@@ -450,7 +450,7 @@ export const JobDetailScreen = ({ route, navigation }) => {
   const handleSubmitReport = async () => {
     setLoading(true);
     try {
-      await inspectionsApi.submitReport(job.id, {
+      await inspectionsApi.submitReport(job.id, user.id, {
         inspection_id: job.id,
         steps: progress?.steps || [],
         overall_notes: notes,
