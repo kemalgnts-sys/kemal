@@ -308,9 +308,8 @@ async def _test_complete_step_retry_does_not_skip_required_steps():
     server.db = FakeDb(progress=[first_step])
 
     await server.complete_step("inspection-1", "exterior_front", "done")
-    with pytest.raises(HTTPException) as retry_error:
-        await server.complete_step("inspection-1", "exterior_front", "duplicate")
-    assert retry_error.value.status_code == 400
+    retry_result = await server.complete_step("inspection-1", "exterior_front", "duplicate")
+    assert retry_result == {"message": "Step already completed"}
     await server.complete_step("inspection-1", "exterior_sides", "done")
 
     progress = await server.db.inspection_progress.find_one({"inspection_id": "inspection-1"})

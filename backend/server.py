@@ -484,10 +484,10 @@ async def complete_step(inspection_id: str, step_name: str, notes: str = ""):
     step_index = next((i for i, step in enumerate(progress["steps"]) if step["step_name"] == step_name), None)
     if step_index is None:
         raise HTTPException(status_code=400, detail="Invalid inspection step")
-    if step_index != progress["current_step"]:
-        raise HTTPException(status_code=400, detail="Step is not current")
     if progress["steps"][step_index].get("completed"):
         return {"message": "Step already completed"}
+    if step_index != progress["current_step"]:
+        raise HTTPException(status_code=400, detail="Step is not current")
     
     await db.inspection_progress.update_one(
         {"inspection_id": inspection_id, "steps.step_name": step_name},
