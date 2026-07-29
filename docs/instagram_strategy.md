@@ -3,9 +3,10 @@
 **Rol:** Sosyal Medya Direktörü · Marka Yöneticisi · İçerik Stratejisti  
 **Hesap:** [@gurbetdecom](https://www.instagram.com/gurbetdecom/)  
 **Web:** [gurbetde.com](https://www.gurbetde.com)  
-**Belge durumu:** İlk denetim + profil stratejisi (kampanya talimatı bekleniyor)  
-**Tarih:** 28 Temmuz 2026  
-**Kapsam:** Read-only platform okuması · kod müdahalesi yok
+**Belge durumu:** Denetim + sütunlar + yönetici vizyonu + 90 gün plan (kampanya brief’i bekleniyor)  
+**Tarih:** 28–29 Temmuz 2026  
+**Kapsam:** Read-only platform okuması · kod müdahalesi yok  
+**Bilgi bankası:** `docs/social_media_management_playbook.md`
 
 ---
 
