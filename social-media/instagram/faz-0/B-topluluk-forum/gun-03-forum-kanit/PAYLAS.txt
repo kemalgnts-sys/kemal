@@ -1,0 +1,33 @@
+P05 — Forum kanıtı Carousel | Gün 3 | 5 slide
+Deep link: https://www.gurbetde.com/forum
+
+=== SLIDES ===
+1) Forumda bugün
+   Wohnungsgeberbestätigung imzalanmıyor — ne olur?
+
+2) Sorun
+   Ev sahibi formu imzalamıyor. Anmeldung bekliyor.
+
+3) Neden kritik
+   Bu belge olmadan Bürgeramt kaydı çoğu yerde yürümüyor.
+
+4) Ne yapılır
+   Aynı yolu geçmişlerin deneyimini oku. Sorunu foruma yaz.
+
+5) CTA
+   gurbetde.com/forum
+   Şehrini seç · Konu aç
+
+=== CAPTION ===
+Eski forumda konu kaybolur. GurbetDe'de kategori + şehir var.
+
+Örnek: Wohnungsgeberbestätigung imzalanmıyor — Bürgeramt ne diyor?
+
+Sen de takıldığın adımı yaz. Cevaplayanlar aynı yollardan geçmiş.
+
+→ gurbetde.com/forum
+
+#gurbetde #forum #anmeldung #wohnungsgeberbestätigung #almanyadahayat #gurbetçi #berlin
+
+=== İLK YORUM (PIN) ===
+Foruma git: https://www.gurbetde.com/forum?kategori=anmeldung
