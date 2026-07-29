@@ -3,10 +3,11 @@
 **Rol:** Sosyal Medya Direktörü · Marka Yöneticisi · İçerik Stratejisti  
 **Hesap:** [@gurbetdecom](https://www.instagram.com/gurbetdecom/)  
 **Web:** [gurbetde.com](https://www.gurbetde.com)  
-**Belge durumu:** Denetim + sütunlar + yönetici vizyonu + 90 gün plan (kampanya brief’i bekleniyor)  
+**Belge durumu:** Faz 0 yayın paketi AKTİF — bio, Highlights, 9 post, Stories, SOP hazır  
 **Tarih:** 28–29 Temmuz 2026  
 **Kapsam:** Read-only platform okuması · kod müdahalesi yok  
-**Bilgi bankası:** `docs/social_media_management_playbook.md`
+**Bilgi bankası:** `docs/social_media_management_playbook.md`  
+**Yayın klasörü:** `social-media/instagram/faz-0/`
 
 ---
 
@@ -331,25 +332,464 @@ Arz besleme (cevap yaz, ilan ver, rehber yazarı)
 
 ---
 
-## 9. Bekleyen Karar / Sonraki Talimat
+## 9. Faz 0 — Yayın Paketi (AKTİF)
 
-Yönetim vizyonu ve 90 günlük plan kilitlendi. Playbook kaydedildi.
+**Durum:** İçerik üretildi. Sen Instagram’da aşağıdaki sırayla paylaşıyorsun.  
+**Beachhead:** Berlin + Anmeldung / Konut  
+**Görsel dil:** Navy `#0D1B2A` · White · Gold `#FFCC00` · Red `#E30A17` (yalnızca “De”) · sol üst wordmark · merkez line-icon  
+**Saat:** Almanya saati **18:30–20:30** (hafta içi tercih)  
+**Kopyala-yapıştır dosyalar:** `social-media/instagram/faz-0/`
 
-**Hazır olduğunda verilecek talimat örnekleri:**
-- Faz 0 uygulama paketi (bio metni final + Highlights kapak brief + 9 post backlog metinleri)
-- “Anmeldung 7-gün sprint”
-- Beachhead onayı (Berlin mi, başka şehir mi?)
-- Meta Ads altyapı checklist (Pixel event listesi)
+### 9.1 Bugün yap (paylaşımdan önce — 20 dk)
 
-Talimat gelince bu dosyaya: yayın takvimi, post metinleri, hook’lar, carousel taslakları, hashtag setleri, story akışları eklenecek.
+1. **Bio’yu değiştir** (aşağıdaki final metin).
+2. **Highlights kapaklarını** oluştur (6 adet; içerik sonra Stories’ten eklenir).
+3. Mevcut 2 post kalsın. **Özellik carousel’ini Pin’le** (en üst).
+4. Professional dashboard: Insights açık.
+
+#### Bio (final — aynen yapıştır)
+
+```
+Almanya'da Türkçe yaşam işletim sistemi
+Vize · Anmeldung · İş · Oturum — rehber + forum
+👇 Şehrini seç, sorunu çöz
+```
+
+Link: `https://www.gurbetde.com`  
+İsim alanı (koru): `GurbetDe | Almanya Göç & Yaşam Rehberi`
+
+#### Highlights kapakları (sırayla)
+
+| # | İsim | Kapak metni | İkon |
+|---|------|-------------|------|
+| 1 | Rehber | REHBER | açık kitap |
+| 2 | Forum | FORUM | konuşma balonu |
+| 3 | İlanlar | İLANLAR | pin + bina |
+| 4 | Konsolosluk | KONSOLOSLUK | damga |
+| 5 | Şehirler | ŞEHİRLER | harita noktası |
+| 6 | Başla | BAŞLA | logo G |
+
+Kapak kuralı: navy zemin, gold ikon, tek kelime beyaz. Hikâye yokken bile boş kapak koy — profil dolu görünsün.
+
+---
+
+### 9.2 14 günlük yayın takvimi
+
+| Gün | Kod | Format | Konu | Pin? |
+|-----|-----|--------|------|------|
+| 1 | P03 | Carousel 6 | Anmeldung: 5 adım + belge listesi | Evet (2. pin) |
+| 2 | P04 | Reel 25sn | “Anmeldung’suz banka açtın — sonra ne olur?” | — |
+| 3 | P05 | Carousel 5 | Forum kanıtı: Wohnungsgeberbestätigung | — |
+| 4 | P06 | Reel 20sn | Eski forum vs GurbetDe (3 fark) | — |
+| 5 | P07 | Tek kare + caption | Berlin beachhead: bu hafta ne soruluyor | — |
+| 6 | P08 | Carousel 5 | Schufa “keine Information” — konut dosyası | — |
+| 7 | P09 | Reel 22sn | Konsolosluk kanalı — tek tık | — |
+| 8 | P10 | Carousel 6 | WG / kira: Mietvertrag checklist | — |
+| 9 | P11 | Reel 18sn | “gurbetde.com’da sorunu yaz” CTA | — |
+| 10–14 | — | Stories ağır | Aşağıdaki Story setini döndür + en iyi postu boost etme (ücretli yok) | — |
+
+Mevcut P01 (launch) ve P02 (özellik) = grid’in temeli. Yeni postlar P03’ten başlar.
+
+---
+
+### 9.3 Post paketleri (metin + slide + hashtag)
+
+Her postta **ilk yorumu sabitle** (linkli). Caption sonuna hashtag. Disclaimer gerekiyorsa: *Bilgilendirme amaçlıdır; resmi kurumdan teyit edin.*
+
+---
+
+#### P03 — Anmeldung Carousel (Gün 1) ★ PIN
+
+**Format:** 1080×1080 · 6 slide · navy  
+**Amaç:** Save + guide trafiği  
+**Link:** https://www.gurbetde.com/guide/anmeldung
+
+**Slide metinleri**
+
+1. Hook  
+   - H1: `Anmeldung'u erteleme`  
+   - Alt: `14 gün kuralı + belge listesi — Türkçe`  
+   - Altın: `Kaydır →`
+
+2. Nedir?  
+   - H1: `Anmeldung nedir?`  
+   - Body: `Adresini Bürgeramt'a resmi bildirmek. Anmeldebestätigung olmadan banka, sigorta ve birçok işlem kilitlenir.`
+
+3. Belgeler  
+   - H1: `Yanına al`  
+   - Madde: `Pasaport/Kimlik` · `Wohnungsgeberbestätigung` · `Mietvertrag` · `Anmeldung formu` · `(varsa) aile belgeleri`
+
+4. Randevu  
+   - H1: `Termin gerçeği`  
+   - Body: `Büyük şehirde randevusuz gitme. Sabah erken slot açılır; iptalleri takip et.`  
+   - Mini: `Berlin → service.berlin.de`
+
+5. Sakla  
+   - H1: `Belgeyi sakla`  
+   - Body: `Anmeldebestätigung fotokopisi: banka ve işveren ister. Taşınınca yeniden Anmeldung.`
+
+6. CTA  
+   - H1: `Adım adım rehber`  
+   - Body: `gurbetde.com/guide/anmeldung`  
+   - Gold: `Kaydet · Paylaş`
+
+**Caption (yapıştır)**
+
+```
+Anmeldung'u “sonra hallederim” dersen, banka ve sigorta da “sonra”a kalır.
+
+14 gün kuralı, Wohnungsgeberbestätigung, Bürgeramt termin — hepsi tek rehberde, Türkçe.
+
+Bu carousel'i kaydet. Taşınma çantana koy.
+
+Detay → gurbetde.com/guide/anmeldung
+
+Bilgilendirme amaçlıdır; şehrinin Bürgeramt sayfasından teyit et.
+
+Soru: Senin şehirde termin kaç günde çıktı? Yorumla.
+```
+
+**İlk yorum (pin)**
+
+```
+Tam rehber: https://www.gurbetde.com/guide/anmeldung
+Forumda takıldığın yeri sor: https://www.gurbetde.com/forum
+```
+
+**Hashtags**
+
+```
+#gurbetde #anmeldung #bürgeramt #almanyadahayat #türkleralmanya #berlin #gurbetçi #yenigelen #oturum #almanya
+```
+
+---
+
+#### P04 — Reel: Anmeldung’suz banka (Gün 2)
+
+**Format:** 1080×1920 · ~25 sn · text-on-screen · altyazı açık  
+**Hook (0–2 sn):** `Anmeldung'suz banka açtın.`  
+**Görsel:** koyu zemin, büyük beyaz yazı, gold vurgu kelimeler
+
+**Ekran metni / senaryo**
+
+| sn | Ekran |
+|----|--------|
+| 0–2 | `Anmeldung'suz banka açtın.` |
+| 2–6 | `Hesap açıldı sanıyorsun.` |
+| 6–12 | `Sonra: maaş, TK primi, Schufa dosyası…` |
+| 12–18 | `Anmeldebestätigung isteyen yerler kilitlenir.` |
+| 18–25 | `Önce Anmeldung. Rehber: gurbetde.com` |
+
+**Caption**
+
+```
+Hesap açmak ≠ iş bitirmek.
+
+Birçok banka ve kurum Anmeldebestätigung ister. Sıra: adres kaydı → belge → sonra finans.
+
+Kaydet, taşınacak arkadaşına yolla.
+
+Rehber → gurbetde.com/guide/anmeldung
+```
+
+**İlk yorum**
+
+```
+https://www.gurbetde.com/guide/anmeldung
+```
+
+**Hashtags**
+
+```
+#gurbetde #anmeldung #bankahesabı #almanyadahayat #gurbetçi #türkleralmanya
+```
+
+**CTA sticker (Stories paylaşımında):** Link → guide
+
+---
+
+#### P05 — Forum kanıtı carousel (Gün 3)
+
+**Format:** 5 slide  
+**Amaç:** Sosyal kanıt + forum trafiği  
+**Link:** https://www.gurbetde.com/forum
+
+**Slides**
+
+1. `Forumda bugün` / `Wohnungsgeberbestätigung imzalanmıyor — ne olur?`
+2. `Sorun:` `Ev sahibi formu imzalamıyor. Anmeldung bekliyor.`
+3. `Neden kritik:` `Bu belge olmadan Bürgeramt kaydı çoğu yerde yürümüyor.`
+4. `Ne yapılır:` `Aynı yolu geçmişlerin deneyimini oku. Sorunu foruma yaz.`
+5. `CTA:` `gurbetde.com/forum` · `Şehrini seç · Konu aç`
+
+**Caption**
+
+```
+Eski forumda konu kaybolur. GurbetDe'de kategori + şehir var.
+
+Örnek: Wohnungsgeberbestätigung imzalanmıyor — Bürgeramt ne diyor?
+
+Sen de takıldığın adımı yaz. Cevaplayanlar aynı yollardan geçmiş.
+
+→ gurbetde.com/forum
+```
+
+**İlk yorum**
+
+```
+Foruma git: https://www.gurbetde.com/forum?kategori=anmeldung
+```
+
+**Hashtags**
+
+```
+#gurbetde #forum #anmeldung #wohnungsgeberbestätigung #almanyadahayat #gurbetçi #berlin
+```
+
+---
+
+#### P06 — Reel: Eski forum vs GurbetDe (Gün 4)
+
+**~20 sn · 3 fark**
+
+| sn | Ekran |
+|----|--------|
+| 0–2 | `Eski forum yetmiyor.` |
+| 2–8 | `1) Dağınık konu · GurbetDe: kategori + şehir` |
+| 8–14 | `2) Sadece sohbet · GurbetDe: rehber + ilan + kanal` |
+| 14–20 | `3) 2005 hissi · GurbetDe: modern, Türkçe, tek yer` |
+| son | `gurbetde.com` |
+
+**Caption**
+
+```
+Dağınık forum + WhatsApp + rastgele Reel tavsiyesi = bilgi kaosu.
+
+GurbetDe: rehber, forum, ilan, konsolosluk kanalı — tek çatıda.
+
+Aramıza katıl → gurbetde.com
+```
+
+**Hashtags**
+
+```
+#gurbetde #dijitaltopluluk #almanyadahayat #türkdiaspora #gurbetçi #yeninesil
+```
+
+---
+
+#### P07 — Berlin beachhead (Gün 5)
+
+**Format:** Tek kare 1080×1080  
+**Görsel:** Navy · büyük `BERLİN` · alt: `Bu hafta forumda` · 3 mini satır konu tipi
+
+**Kare metin**
+
+```
+BERLİN
+Bu hafta sorulanlar
+· Anmeldung / Bürgeramt termin
+· WG & Schufa
+· Dil kursu ilanları
+gurbetde.com → Şehrini seç
+```
+
+**Caption**
+
+```
+Beachhead: Berlin.
+
+Anmeldung, WG, dil kursu — aynı şehirde yaşayanlar aynı sorunları yaşıyor.
+
+Şehrini seç, konuyu aç veya ilanlara bak.
+→ gurbetde.com
+```
+
+**İlk yorum**
+
+```
+Berlin odası: https://www.gurbetde.com/sohbet/berlin
+İlanlar: https://www.gurbetde.com/ilanlar
+```
+
+**Hashtags**
+
+```
+#gurbetde #berlin #türklerberlin #almanyadahayat #gurbetçi #wgzimmer
+```
+
+---
+
+#### P08 — Schufa / konut carousel (Gün 6)
+
+**5 slide · Link:** forum konut + guide kira
+
+1. Hook: `Schufa "keine Information"` / `Ev sahibi yine dosya istiyor`
+2. `Bu ne demek:` `Yeni gelende kayıt boş olabilir — “skor yok” ≠ “kötü skor”.`
+3. `Dosyaya ne eklenir:` `İş sözleşmesi · banka ekstre · kefil/garanti · Mieterselbstauskunft`
+4. `Soru foruma:` `Senin şehirde ne işe yaradı?`
+5. CTA: `gurbetde.com/forum` + `Rehber: kira ve konut`
+
+**Caption**
+
+```
+İlk Schufa çıktında "keine Information" görmek panik değil — yeni başlangıç sinyali.
+
+Ev sahibi yine paket ister. Ne koyacağını bilmek = ev kapısı.
+
+Kaydet. Foruma deneyimini yaz.
+→ gurbetde.com/forum
+Rehber: gurbetde.com/guide/kira-ve-konut
+```
+
+**Hashtags**
+
+```
+#gurbetde #schufa #kira #wg #konut #almanyadahayat #gurbetçi #berlin
+```
+
+---
+
+#### P09 — Reel: Konsolosluk kanalı (Gün 7)
+
+| sn | Ekran |
+|----|--------|
+| 0–2 | `Randevu duyurusu kaçtı mı?` |
+| 2–10 | `Vize · pasaport · konsolosluk` |
+| 10–16 | `Kaynağa yakın akış — tek yerde` |
+| 16–22 | `gurbetde.com → Konsolosluk Haberleri` |
+
+**Caption**
+
+```
+Konsolosluk duyurusu Story'de kaybolmasın.
+
+GurbetDe Konsolosluk kanalı: randevu, vize, pasaport — cebinde.
+→ gurbetde.com/sohbet/kanal-konsolosluk-haber
+```
+
+**Hashtags**
+
+```
+#gurbetde #konsolosluk #vize #pasaport #almanyadahayat #gurbetçi
+```
+
+---
+
+#### P10 — Kira / WG checklist carousel (Gün 8)
+
+**6 slide**
+
+1. `WG / kira dosyası` / `Başvurudan önce checklist`
+2. `Mietvertrag` — sözleşmeyi okumadan imzalama
+3. `Kaution + Nebenkosten` — net aylık maliyeti hesapla
+4. `Untermiete vs Zwischenmiete` — türü netleştir
+5. `İlanlarda şehir seç` — Berlin’den Münih’e
+6. CTA: `gurbetde.com/ilanlar` · `Rehber: /guide/kira-ve-konut`
+
+**Caption**
+
+```
+WG bulmak şans işi değil — dosya işi.
+
+Checklist'i kaydet. İlanı şehir filtreyle gör.
+→ gurbetde.com/ilanlar
+```
+
+**Hashtags**
+
+```
+#gurbetde #wg #mietvertrag #kira #almanyadahayat #berlin #münih #gurbetçi
+```
+
+---
+
+#### P11 — Reel CTA (Gün 9)
+
+| sn | Ekran |
+|----|--------|
+| 0–2 | `Sorununu Story'ye yazma.` |
+| 2–8 | `Foruma yaz. Rehberi oku. İlanı aç.` |
+| 8–14 | `Aynı yolu geçmişler burada.` |
+| 14–18 | `gurbetde.com — Aramıza katıl.` |
+
+**Caption**
+
+```
+Bilgi dağınık olmasın.
+
+Rehber · Forum · İlan · Konsolosluk — GurbetDe.
+👇 gurbetde.com
+```
+
+**Hashtags**
+
+```
+#gurbetde #almanyadahayat #gurbetçi #türkleralmanya #dijitaltopluluk
+```
+
+---
+
+### 9.4 Stories — Günlük set (Gün 1–14)
+
+Her gün **3–5 Story**, sıra örnek:
+
+1. **Sabah (opsiyonel):** “Bugünün konusu” + poll (`Anmeldung` / `Kira` / `Vize`)
+2. **Öğle:** Feed postunu Story’ye paylaş + **Link sticker** (deep link)
+3. **Akşam:** “Forumdan 1 satır” (ekran görüntüsü markalı frame) veya “Soru kutusu — şehir yaz”
+4. **CTA:** “Cevabı siteye taşı → gurbetde.com/forum”
+
+Highlights’a ekle:
+- Anmeldung Story’leri → **Rehber**
+- Forum → **Forum**
+- İlan/WG → **İlanlar**
+- Konsolosluk → **Konsolosluk**
+- Berlin → **Şehirler**
+- “Nasıl başlarım” 4 kare → **Başla**
+
+---
+
+### 9.5 Senin yayın SOP’un (her post)
+
+1. Görseli mevcut carousel dilinde üret (Canva/Figma — şablon: wordmark sol üst, gold ikon, navy).
+2. Caption’ı olduğu gibi yapıştır.
+3. Hashtag’leri caption sonuna ekle (3–8/10 arası; set hazır).
+4. Paylaş → **hemen** ilk yorumu yaz ve **pinle**.
+5. Story’ye paylaş + link sticker.
+6. İlk 60 dk: gelen her yoruma cevap (1 cümle + gerekirse link).
+7. Insights not et: reach, saves, shares, profile visits, link taps.
+
+**Yasak:** Beğeni isteyen CTA, 20+ hashtag, “500K üye” abartısı, hukuki garanti dili.
+
+---
+
+### 9.6 Görsel üretim brief (tasarımcı / sen)
+
+- Boyut: Feed 1080×1080 · Reel 1080×1920  
+- Font: geometrik sans, bold H1, body regular  
+- Sol üst: `Gurbet` beyaz + `De` kırmızı  
+- Sağ üst (carousel): `1/6` gold  
+- Alt: `Kaydır →` gold + `gurbetde.com` white  
+- Stok insan yüzü yok; line-icon merkez  
+- Bayrak pastişi / sticker / emoji yağmuru yok  
+
+---
+
+## 10. Sonraki sprint (Faz 0 bitince)
+
+Gün 14 Insights özeti gelince yönetici kararı:
+- Kazanan formatı 2× üret
+- Beachhead genişlet veya sıkılaştır
+- Meta Ads mikro test (yalnızca P03/P04 tipi kazananlar)
 
 ---
 
 ## Kaynaklar
 
 - Canlı site: gurbetde.com (anasayfa, /guide, /forum, /ilanlar, sohbet kanalları)
+- Anmeldung rehberi: https://www.gurbetde.com/guide/anmeldung
 - Mevcut IG grid & bio (ekran görüntüleri, Temmuz 2026)
-- Repo asset’leri: `social-media/instagram/`
+- Repo asset’leri: `social-media/instagram/` · Faz 0: `social-media/instagram/faz-0/`
 - Yönetici bilgi bankası: `docs/social_media_management_playbook.md`
-- Harici öğrenim: Instagram 2026 ranking (shares/saves/Reels), Meta Pixel+CAPI 2026, marketplace cold-start, TR–DE ethno-marketing / DE sosyal kullanım verileri (playbook §10)
+- Harici öğrenim: Instagram 2026 ranking, Meta Pixel+CAPI, cold-start, TR–DE pazar (playbook §10)
 )
