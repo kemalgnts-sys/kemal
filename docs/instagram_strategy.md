@@ -225,19 +225,122 @@ Her feed postunun bir **tek işi** var: profil ziyareti veya site tıklaması.
 
 ---
 
-## 5. Bekleyen Talimat
+## 5. Yönetici Vizyonu (29 Temmuz 2026)
 
-Bu belge: denetim + profil dokunuşları + 3 sütun + estetik/ton.
+### Tek cümlelik vizyon
 
-**Sonraki adım (senin talimatın):** İlk içerik / kampanya brief’i  
-Örn. “Anmeldung carousel kampanyası”, “7 günlük launch sprint”, “Berlin şehir haftası”, “Konsolosluk kanalı push” vb.
+> GurbetDe’nin sosyal medyası, Almanya’daki Türk’ün dağınık bilgi kaosunu **tek modern ürüne** bağlayan güven ve talep motorudur — içerik üretiriz ama işimiz **takipçi şişirmek değil, platform likiditesi yaratmaktır**.
 
-Talimat gelince bu dosyaya şunlar eklenecek:
-- Yayın takvimi
-- Post metinleri + hook’lar
-- Carousel slide taslakları
-- Hashtag setleri
-- Story akışları
+### Ne yönetiyoruz (içerik üreticisi vs yönetici)
+
+| İçerik üreticisi refleksi | Sosyal medya yöneticisi refleksi |
+|---------------------------|----------------------------------|
+| “Güzel post” | “Bu post hangi KPI’yı hareket ettirir?” |
+| Beğeni / estetik | Save, DM share, link tap, kayıt, ilk aksiyon |
+| Herkese her şey | Beachhead (şehir + kategori yoğunluğu) |
+| Sürekli yeni fikir | Kazanan formülü tekrar et, kaybedeni kes |
+| Erken reklam | Önce ölçüm + organik kanıt, sonra ince ads |
+
+Operasyonel bilgi bankası (algoritma, Meta Ads, cold-start, TR–DE pazar, ölçüm):  
+→ **`docs/social_media_management_playbook.md`**
+
+### Kuzey yıldızı metrikler
+
+1. **Bio link / site oturumu** (üst huni sağlık)
+2. **Kayıt + ilk anlamlı aksiyon** (forum konusu, cevap, ilan, rehber derin okuma)
+3. **IG: shares/saves per reach** (algoritma yakıtı)
+4. **Beachhead canlılığı** (seçilen şehir/kategoride haftalık yeni konu–cevap)
+
+Takipçi sayısı raporlanır ama **optimize edilmez**.
+
+---
+
+## 6. Yönetim Planı — 90 Gün (Fazlar)
+
+### Faz 0 — Temel (Gün 1–14): “Satın alınabilir vitrin”
+
+**Hedef:** Soğuk ziyaretçi 8 saniyede ne olduğumuzu anlasın; ölçüm açılsın.
+
+- Bio + Highlights + Category (önceki §1)
+- 9 post’luk backlog (3 sütundan 3’er) — hesap asla “boş gün” yüzü görmesin
+- Reels üretim hattı başlar (keşif motoru); carousel = save makinesi
+- Meta Business: Pixel + CAPI + event’ler (PageView, ViewContent, CompleteRegistration, Lead) — **reklam yok veya mikro test**
+- Günlük 20 dk niche engagement + ilk 60 dk yorum yanıtı disiplini
+- Beachhead seçimi kilitlenir: öneri **Berlin + Anmeldung/Konut** (veya data’ya göre güncellenir)
+
+**Çıkış kriteri:** Profil hazır, 8+ post canlı, tracking doğrulanmış, Highlights dolu.
+
+### Faz 1 — Beachhead likidite (Gün 15–45): “Bir yerde canlıyız”
+
+**Hedef:** Tek şehir / tek sorun kümesinde “soruluyor–cevaplanıyor” hissi.
+
+- İçerik %70 Sütun A+B (bürokrasi + forum kanıtı); %30 Sütun C
+- Haftalık ritim: 3–4 Reels + 1–2 carousel + günlük Stories
+- FB/Telegram Türk gruplarında **değer-önce** varlık (15:1 soft mention kuralı)
+- İlk nano/mikro collab denemeleri (1K–15K diaspora/utility creator)
+- Paid: yalnızca organik kazanan 1–2 kreatifi **trafik → kayıt** ile test; günlük öğrenme bütçesi
+
+**Çıkış kriteri:** Beachhead’te tekrarlayan etkileşim; IG’de save/share oranı yükselen 2+ format; kayıt CPA “anlamlı aralıkta” (iç benchmark oluşur).
+
+### Faz 2 — Motor (Gün 46–90): “Tekrarlanabilir büyüme”
+
+**Hedef:** Kazanan formülü scale; 2. şehir veya 2. kategori; retarget katmanı.
+
+- Collab + Series (örn. “Pazartesi: Termin gerçeği”, “Perşembe: Forumdan”)
+- Paid: mid-funnel event (kayıt veya ilk aksiyon) + site engagers retarget
+- Creative fatigue ritmi: 2–4 haftada hook yenileme
+- Sponsorluk/reklam geliri anlatısı (site `/reklam`) marka güvenini bozmadan — ayrı track
+
+**Çıkış kriteri:** Haftalık sistem oturmuş; WAU/aksiyon trendi yukarı; playbook’a göre scale kararı alınabilir.
+
+---
+
+## 7. Kanal Mimarisi (İnce İşleme)
+
+```
+Keşif (Reels / Explore / Collab / micro-ads)
+        ↓
+Profil güveni (bio, highlights, pin’ler)
+        ↓
+gurbetde.com (rehber okuma / forum / ilan / sohbet)
+        ↓
+Kayıt + ilk aksiyon
+        ↓
+Retention (Stories, bildirim, e-posta ileride)
+        ↓
+Arz besleme (cevap yaz, ilan ver, rehber yazarı)
+```
+
+**Reklam:** Bu huninin her basamağına ayrı kampanya tipi. Cold’da “marka bilinci” için para yakmak yasak — cold = sorun hook’lu utility; warm = ürün derinliği.
+
+**Organik öncelik sırası (ilk 90 gün):** Instagram → Facebook grup sızıntısı → Collab → (sonra) Shorts/TikTok adaptasyonu.
+
+---
+
+## 8. Riskler & Yönetici Kararları
+
+| Risk | Mitigasyon |
+|------|------------|
+| Boş platform hissi | Beachhead + aktivite içeriği; abartılı üye sayısı yok |
+| Erken ads ile pahalı kayıt | Pixel/CAPI + organik kanıt önce |
+| Hukuki yanlış anlama | Disclaimer dili; “resmi kaynağı doğrula” |
+| Soft brand içerik tuzağı | Her post tek iş: sorun veya CTA |
+| Faceless marka yavaş büyür | Gerekirse founder/uzman yüzü Reels’e kontrollü ekle |
+| Tüm Almanya’ya dağılma | Önce bir şehirde atomic network |
+
+---
+
+## 9. Bekleyen Karar / Sonraki Talimat
+
+Yönetim vizyonu ve 90 günlük plan kilitlendi. Playbook kaydedildi.
+
+**Hazır olduğunda verilecek talimat örnekleri:**
+- Faz 0 uygulama paketi (bio metni final + Highlights kapak brief + 9 post backlog metinleri)
+- “Anmeldung 7-gün sprint”
+- Beachhead onayı (Berlin mi, başka şehir mi?)
+- Meta Ads altyapı checklist (Pixel event listesi)
+
+Talimat gelince bu dosyaya: yayın takvimi, post metinleri, hook’lar, carousel taslakları, hashtag setleri, story akışları eklenecek.
 
 ---
 
@@ -245,5 +348,7 @@ Talimat gelince bu dosyaya şunlar eklenecek:
 
 - Canlı site: gurbetde.com (anasayfa, /guide, /forum, /ilanlar, sohbet kanalları)
 - Mevcut IG grid & bio (ekran görüntüleri, Temmuz 2026)
-- Repo asset’leri: `social-media/instagram/` (palette, launch caption — soft launch dönemi; ses artık “yayındayız”a evrildi)
+- Repo asset’leri: `social-media/instagram/`
+- Yönetici bilgi bankası: `docs/social_media_management_playbook.md`
+- Harici öğrenim: Instagram 2026 ranking (shares/saves/Reels), Meta Pixel+CAPI 2026, marketplace cold-start, TR–DE ethno-marketing / DE sosyal kullanım verileri (playbook §10)
 )
