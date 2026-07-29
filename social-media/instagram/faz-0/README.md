@@ -1,44 +1,55 @@
-# GurbetDe Instagram — Faz 0 Yayın Klasörü
+# GurbetDe Instagram — Faz 0 (içerik gruplarına göre dosyalanmış)
 
-Bu klasör **kopyala-yapıştır + hazır görsel** içindir.  
-Tam strateji: `docs/instagram_strategy.md` §9.
+Strateji: `docs/instagram_strategy.md` §9  
+Paylaşımda yardım: her `gun-XX/` klasöründe **görsel + `PAYLAS.txt`** birlikte.
 
-## Bugün (paylaşımdan önce)
+## Klasör haritası
 
-1. `BIO.txt` → Instagram bio’ya yapıştır  
-2. `assets/highlights/*.png` → 6 Highlight kapağı  
-3. Mevcut özellik carousel’ini **Pin**le  
-
-## 9 günlük feed
-
-| Gün | Caption dosyası | Görseller |
-|-----|-----------------|-----------|
-| 1 | `posts/P03-anmeldung-carousel.txt` | `assets/P03-anmeldung/01–06.png` → **Pin (2.)** |
-| 2 | `posts/P04-anmeldung-banka-reel.txt` | Reel: `assets/reel-covers/P04-…` kapak + ekran metni dosyada |
-| 3 | `posts/P05-forum-kanit-carousel.txt` | `assets/P05-forum/01–05.png` |
-| 4 | `posts/P06-eski-forum-vs-reel.txt` | `assets/reel-covers/P06-…` |
-| 5 | `posts/P07-berlin-beachhead.txt` | `assets/P07-berlin/01.png` |
-| 6 | `posts/P08-schufa-konut-carousel.txt` | `assets/P08-schufa/01–05.png` |
-| 7 | `posts/P09-konsolosluk-reel.txt` | `assets/reel-covers/P09-…` |
-| 8 | `posts/P10-kira-wg-carousel.txt` | `assets/P10-kira/01–06.png` |
-| 9 | `posts/P11-cta-reel.txt` | `assets/reel-covers/P11-…` |
-
-**Reels:** Kapak PNG’yi CapCut/IG’de text-on-screen animasyonuyla kullan; senaryo satır satır `.txt` dosyasında.  
-**Stories:** `stories/DAILY.md`  
-**Saat:** 18:30–20:30 (DE)
-
-## Her post SOP
-
-1. Görselleri yükle  
-2. Caption yapıştır  
-3. Paylaş  
-4. İlk yorum → **Pin**  
-5. Story + link sticker  
-6. İlk 60 dk yorumlara cevap  
-
-## Görselleri yeniden üret
-
-```bash
-pip install pillow
-python3 social-media/instagram/faz-0/generate_faz0_assets.py
 ```
+faz-0/
+├── 00-profil/                 ← önce burası
+│   ├── BIO.txt
+│   ├── HIGHLIGHTS.md
+│   └── kapaklar/              (6 PNG)
+├── A-rehber-burokrasi/        ← Sütun A
+│   ├── gun-01-anmeldung-carousel/
+│   ├── gun-02-anmeldung-banka-reel/
+│   ├── gun-06-schufa-konut/
+│   └── gun-08-kira-wg/
+├── B-topluluk-forum/          ← Sütun B
+│   ├── gun-03-forum-kanit/
+│   └── gun-05-berlin/
+├── C-yasam-altyapisi/         ← Sütun C
+│   ├── gun-07-konsolosluk/
+│   └── gun-09-cta/
+├── D-marka-usp/               ← Marka farkı
+│   └── gun-04-eski-forum-vs/
+└── stories/DAILY.md
+```
+
+## Yayın sırası (takvim)
+
+| Sıra | Klasör | Tür |
+|------|--------|-----|
+| 0 | `00-profil/` | Bio + Highlights |
+| 1 | `A-…/gun-01-anmeldung-carousel/` | Carousel ★ Pin |
+| 2 | `A-…/gun-02-anmeldung-banka-reel/` | Reel |
+| 3 | `B-…/gun-03-forum-kanit/` | Carousel |
+| 4 | `D-…/gun-04-eski-forum-vs/` | Reel |
+| 5 | `B-…/gun-05-berlin/` | Tek kare |
+| 6 | `A-…/gun-06-schufa-konut/` | Carousel |
+| 7 | `C-…/gun-07-konsolosluk/` | Reel |
+| 8 | `A-…/gun-08-kira-wg/` | Carousel |
+| 9 | `C-…/gun-09-cta/` | Reel |
+
+Her pakette: görseller + `PAYLAS.txt` (caption · ilk yorum · hashtag).
+
+## SOP
+
+1. İlgili `gun-XX` klasörünü aç  
+2. Görselleri yükle  
+3. `PAYLAS.txt` içinden caption + pin yorum  
+4. Story + link (`stories/DAILY.md`)  
+5. 60 dk yorumlara cevap → bana “tamam” de, sonraki güne geçelim  
+
+Saat: **18:30–20:30 DE**

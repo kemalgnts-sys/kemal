@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate GurbetDe Faz-0 Instagram static assets (carousels + single + highlights)."""
+"""Generate GurbetDe Faz-0 assets into content-group folders."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-OUT = Path(__file__).parent / "assets"
+ROOT = Path(__file__).parent
 SIZE = 1080
 
 NAVY = (13, 27, 42)
@@ -71,7 +71,6 @@ def slide_no(draw: ImageDraw.ImageDraw, n: int, total: int) -> None:
 def base() -> tuple[Image.Image, ImageDraw.ImageDraw]:
     img = Image.new("RGB", (SIZE, SIZE), NAVY)
     draw = ImageDraw.Draw(img)
-    # subtle frame
     draw.rectangle([24, 24, SIZE - 24, SIZE - 24], outline=(30, 48, 70), width=2)
     return img, draw
 
@@ -96,13 +95,11 @@ def make_text_slide(
     img, draw = base()
     wordmark(draw)
     slide_no(draw, n, total)
-
     tf = font(title_size, bold=True)
     title_lines = wrap(draw, title, tf, SIZE - 120)
     y = 280
     y = draw_lines(draw, title_lines, y, tf, WHITE, gap=10)
     y += 28
-
     bf = font(30, bold=False)
     if isinstance(body, list):
         for item in body:
@@ -115,7 +112,6 @@ def make_text_slide(
         for wl in wrap(draw, body, bf, SIZE - 140):
             draw.text(((SIZE - tw(wl, bf)) // 2, y), wl, font=bf, fill=MUTED)
             y += 42
-
     footer(draw, swipe=swipe)
     out.parent.mkdir(parents=True, exist_ok=True)
     img.save(out, "PNG")
@@ -185,102 +181,11 @@ def make_highlight(out: Path, label: str) -> None:
     print("wrote", out)
 
 
-def gen_p03() -> None:
-    d = OUT / "P03-anmeldung"
-    make_hook_slide(d / "01.png", 1, 6, "Anmeldung'u erteleme", "14 gün kuralı + belge listesi — Türkçe")
-    make_text_slide(d / "02.png", 2, 6, "Anmeldung nedir?", "Adresini Bürgeramt'a resmi bildirmek. Anmeldebestätigung olmadan banka, sigorta ve birçok işlem kilitlenir.")
-    make_text_slide(
-        d / "03.png",
-        3,
-        6,
-        "Yanına al",
-        ["Pasaport/Kimlik", "Wohnungsgeberbestätigung", "Mietvertrag", "Anmeldung formu", "(varsa) aile belgeleri"],
-    )
-    make_text_slide(
-        d / "04.png",
-        4,
-        6,
-        "Termin gerçeği",
-        "Büyük şehirde randevusuz gitme. Sabah erken slot açılır; iptalleri takip et. Berlin → service.berlin.de",
-    )
-    make_text_slide(
-        d / "05.png",
-        5,
-        6,
-        "Belgeyi sakla",
-        "Anmeldebestätigung fotokopisi: banka ve işveren ister. Taşınınca yeniden Anmeldung.",
-    )
-    make_cta_slide(d / "06.png", 6, 6, "Adım adım rehber", "gurbetde.com/guide/anmeldung")
-
-
-def gen_p05() -> None:
-    d = OUT / "P05-forum"
-    make_hook_slide(d / "01.png", 1, 5, "Forumda bugün", "Wohnungsgeberbestätigung imzalanmıyor — ne olur?")
-    make_text_slide(d / "02.png", 2, 5, "Sorun", "Ev sahibi formu imzalamıyor. Anmeldung bekliyor.")
-    make_text_slide(d / "03.png", 3, 5, "Neden kritik", "Bu belge olmadan Bürgeramt kaydı çoğu yerde yürümüyor.")
-    make_text_slide(d / "04.png", 4, 5, "Ne yapılır", "Aynı yolu geçmişlerin deneyimini oku. Sorunu foruma yaz.")
-    make_cta_slide(d / "05.png", 5, 5, "Şehrini seç · Konu aç", "gurbetde.com/forum")
-
-
-def gen_p07() -> None:
-    make_single(
-        OUT / "P07-berlin" / "01.png",
-        [
-            ("BERLİN", 72, WHITE, True),
-            ("Bu hafta sorulanlar", 34, GOLD, True),
-            ("· Anmeldung / Bürgeramt termin", 30, MUTED, False),
-            ("· WG & Schufa", 30, MUTED, False),
-            ("· Dil kursu ilanları", 30, MUTED, False),
-            ("Şehrini seç → gurbetde.com", 28, WHITE, True),
-        ],
-    )
-
-
-def gen_p08() -> None:
-    d = OUT / "P08-schufa"
-    make_hook_slide(d / "01.png", 1, 5, 'Schufa "keine Information"', "Ev sahibi yine dosya istiyor")
-    make_text_slide(d / "02.png", 2, 5, "Bu ne demek", 'Yeni gelende kayıt boş olabilir — "skor yok" ≠ "kötü skor".')
-    make_text_slide(
-        d / "03.png",
-        3,
-        5,
-        "Dosyaya ne eklenir",
-        ["İş sözleşmesi", "Banka ekstre", "Kefil/garanti", "Mieterselbstauskunft"],
-    )
-    make_text_slide(d / "04.png", 4, 5, "Soru foruma", "Senin şehirde ne işe yaradı?")
-    make_cta_slide(d / "05.png", 5, 5, "Forum + kira rehberi", "gurbetde.com/forum")
-
-
-def gen_p10() -> None:
-    d = OUT / "P10-kira"
-    make_hook_slide(d / "01.png", 1, 6, "WG / kira dosyası", "Başvurudan önce checklist")
-    make_text_slide(d / "02.png", 2, 6, "Mietvertrag", "Sözleşmeyi okumadan imzalama.")
-    make_text_slide(d / "03.png", 3, 6, "Kaution + Nebenkosten", "Net aylık maliyeti hesapla.")
-    make_text_slide(d / "04.png", 4, 6, "Untermiete vs Zwischenmiete", "Türü netleştir — hakların değişir.")
-    make_text_slide(d / "05.png", 5, 6, "İlanlarda şehir seç", "Berlin'den Münih'e — filtrele, gör.")
-    make_cta_slide(d / "06.png", 6, 6, "İlanlara git", "gurbetde.com/ilanlar")
-
-
-def gen_highlights() -> None:
-    d = OUT / "highlights"
-    labels = [
-        ("rehber", "REHBER"),
-        ("forum", "FORUM"),
-        ("ilanlar", "İLANLAR"),
-        ("konsolosluk", "KONSOLOSLUK"),
-        ("sehirler", "ŞEHİRLER"),
-        ("basla", "BAŞLA"),
-    ]
-    for slug, label in labels:
-        make_highlight(d / f"{slug}.png", label)
-
-
 def make_reel_cover(out: Path, lines: list[tuple[str, int, tuple, bool]]) -> None:
     w, h = 1080, 1920
     img = Image.new("RGB", (w, h), NAVY)
     draw = ImageDraw.Draw(img)
     draw.rectangle([24, 24, w - 24, h - 24], outline=(30, 48, 70), width=2)
-    # wordmark
     f = font(42, bold=True)
     draw.text((56, 64), "Gurbet", font=f, fill=WHITE)
     draw.text((56 + tw("Gurbet", f), 64), "De", font=f, fill=RED)
@@ -299,48 +204,91 @@ def make_reel_cover(out: Path, lines: list[tuple[str, int, tuple, bool]]) -> Non
     print("wrote", out)
 
 
+def gen_highlights() -> None:
+    d = ROOT / "00-profil" / "kapaklar"
+    for slug, label in [
+        ("rehber", "REHBER"),
+        ("forum", "FORUM"),
+        ("ilanlar", "İLANLAR"),
+        ("konsolosluk", "KONSOLOSLUK"),
+        ("sehirler", "ŞEHİRLER"),
+        ("basla", "BAŞLA"),
+    ]:
+        make_highlight(d / f"{slug}.png", label)
+
+
+def gen_p03() -> None:
+    d = ROOT / "A-rehber-burokrasi" / "gun-01-anmeldung-carousel" / "slides"
+    make_hook_slide(d / "01.png", 1, 6, "Anmeldung'u erteleme", "14 gün kuralı + belge listesi — Türkçe")
+    make_text_slide(d / "02.png", 2, 6, "Anmeldung nedir?", "Adresini Bürgeramt'a resmi bildirmek. Anmeldebestätigung olmadan banka, sigorta ve birçok işlem kilitlenir.")
+    make_text_slide(d / "03.png", 3, 6, "Yanına al", ["Pasaport/Kimlik", "Wohnungsgeberbestätigung", "Mietvertrag", "Anmeldung formu", "(varsa) aile belgeleri"])
+    make_text_slide(d / "04.png", 4, 6, "Termin gerçeği", "Büyük şehirde randevusuz gitme. Sabah erken slot açılır; iptalleri takip et. Berlin → service.berlin.de")
+    make_text_slide(d / "05.png", 5, 6, "Belgeyi sakla", "Anmeldebestätigung fotokopisi: banka ve işveren ister. Taşınınca yeniden Anmeldung.")
+    make_cta_slide(d / "06.png", 6, 6, "Adım adım rehber", "gurbetde.com/guide/anmeldung")
+
+
+def gen_p05() -> None:
+    d = ROOT / "B-topluluk-forum" / "gun-03-forum-kanit" / "slides"
+    make_hook_slide(d / "01.png", 1, 5, "Forumda bugün", "Wohnungsgeberbestätigung imzalanmıyor — ne olur?")
+    make_text_slide(d / "02.png", 2, 5, "Sorun", "Ev sahibi formu imzalamıyor. Anmeldung bekliyor.")
+    make_text_slide(d / "03.png", 3, 5, "Neden kritik", "Bu belge olmadan Bürgeramt kaydı çoğu yerde yürümüyor.")
+    make_text_slide(d / "04.png", 4, 5, "Ne yapılır", "Aynı yolu geçmişlerin deneyimini oku. Sorunu foruma yaz.")
+    make_cta_slide(d / "05.png", 5, 5, "Şehrini seç · Konu aç", "gurbetde.com/forum")
+
+
+def gen_p07() -> None:
+    make_single(
+        ROOT / "B-topluluk-forum" / "gun-05-berlin" / "01.png",
+        [
+            ("BERLİN", 72, WHITE, True),
+            ("Bu hafta sorulanlar", 34, GOLD, True),
+            ("· Anmeldung / Bürgeramt termin", 30, MUTED, False),
+            ("· WG & Schufa", 30, MUTED, False),
+            ("· Dil kursu ilanları", 30, MUTED, False),
+            ("Şehrini seç → gurbetde.com", 28, WHITE, True),
+        ],
+    )
+
+
+def gen_p08() -> None:
+    d = ROOT / "A-rehber-burokrasi" / "gun-06-schufa-konut" / "slides"
+    make_hook_slide(d / "01.png", 1, 5, 'Schufa "keine Information"', "Ev sahibi yine dosya istiyor")
+    make_text_slide(d / "02.png", 2, 5, "Bu ne demek", 'Yeni gelende kayıt boş olabilir — "skor yok" ≠ "kötü skor".')
+    make_text_slide(d / "03.png", 3, 5, "Dosyaya ne eklenir", ["İş sözleşmesi", "Banka ekstre", "Kefil/garanti", "Mieterselbstauskunft"])
+    make_text_slide(d / "04.png", 4, 5, "Soru foruma", "Senin şehirde ne işe yaradı?")
+    make_cta_slide(d / "05.png", 5, 5, "Forum + kira rehberi", "gurbetde.com/forum")
+
+
+def gen_p10() -> None:
+    d = ROOT / "A-rehber-burokrasi" / "gun-08-kira-wg" / "slides"
+    make_hook_slide(d / "01.png", 1, 6, "WG / kira dosyası", "Başvurudan önce checklist")
+    make_text_slide(d / "02.png", 2, 6, "Mietvertrag", "Sözleşmeyi okumadan imzalama.")
+    make_text_slide(d / "03.png", 3, 6, "Kaution + Nebenkosten", "Net aylık maliyeti hesapla.")
+    make_text_slide(d / "04.png", 4, 6, "Untermiete vs Zwischenmiete", "Türü netleştir — hakların değişir.")
+    make_text_slide(d / "05.png", 5, 6, "İlanlarda şehir seç", "Berlin'den Münih'e — filtrele, gör.")
+    make_cta_slide(d / "06.png", 6, 6, "İlanlara git", "gurbetde.com/ilanlar")
+
+
 def gen_reel_covers() -> None:
-    d = OUT / "reel-covers"
     make_reel_cover(
-        d / "P04-anmeldung-banka.png",
-        [
-            ("Anmeldung'suz", 64, WHITE, True),
-            ("banka açtın.", 64, WHITE, True),
-            ("Sonra ne olur?", 40, GOLD, True),
-        ],
+        ROOT / "A-rehber-burokrasi" / "gun-02-anmeldung-banka-reel" / "kapak.png",
+        [("Anmeldung'suz", 64, WHITE, True), ("banka açtın.", 64, WHITE, True), ("Sonra ne olur?", 40, GOLD, True)],
     )
     make_reel_cover(
-        d / "P06-eski-forum.png",
-        [
-            ("Eski forum", 64, WHITE, True),
-            ("yetmiyor.", 64, WHITE, True),
-            ("3 fark — GurbetDe", 36, GOLD, True),
-        ],
+        ROOT / "D-marka-usp" / "gun-04-eski-forum-vs" / "kapak.png",
+        [("Eski forum", 64, WHITE, True), ("yetmiyor.", 64, WHITE, True), ("3 fark — GurbetDe", 36, GOLD, True)],
     )
     make_reel_cover(
-        d / "P09-konsolosluk.png",
-        [
-            ("Randevu duyurusu", 56, WHITE, True),
-            ("kaçtı mı?", 56, WHITE, True),
-            ("Konsolosluk kanalı", 36, GOLD, True),
-        ],
+        ROOT / "C-yasam-altyapisi" / "gun-07-konsolosluk" / "kapak.png",
+        [("Randevu duyurusu", 56, WHITE, True), ("kaçtı mı?", 56, WHITE, True), ("Konsolosluk kanalı", 36, GOLD, True)],
     )
     make_reel_cover(
-        d / "P11-cta.png",
-        [
-            ("Sorununu", 64, WHITE, True),
-            ("Story'ye yazma.", 64, WHITE, True),
-            ("gurbetde.com'a gel", 36, GOLD, True),
-        ],
+        ROOT / "C-yasam-altyapisi" / "gun-09-cta" / "kapak.png",
+        [("Sorununu", 64, WHITE, True), ("Story'ye yazma.", 64, WHITE, True), ("gurbetde.com'a gel", 36, GOLD, True)],
     )
 
 
 def main() -> None:
-    # clean old highlight names with combining chars if present
-    hdir = OUT / "highlights"
-    if hdir.exists():
-        for p in hdir.glob("*.png"):
-            p.unlink()
     gen_highlights()
     gen_p03()
     gen_p05()
@@ -348,7 +296,7 @@ def main() -> None:
     gen_p08()
     gen_p10()
     gen_reel_covers()
-    print("done →", OUT)
+    print("done → content-group folders under", ROOT)
 
 
 if __name__ == "__main__":
