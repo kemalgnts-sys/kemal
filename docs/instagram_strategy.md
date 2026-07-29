@@ -339,7 +339,7 @@ Arz besleme (cevap yaz, ilan ver, rehber yazarı)
 **Görsel dil:** Navy `#0D1B2A` · White · Gold `#FFCC00` · Red `#E30A17` (yalnızca “De”) · sol üst wordmark · merkez line-icon  
 **Saat:** Almanya saati **18:30–20:30** (hafta içi tercih)  
 **Kopyala-yapıştır dosyalar:** `social-media/instagram/faz-0/`  
-**Hazır görseller:** `social-media/instagram/faz-0/assets/` (carousel PNG + highlight kapakları + reel kapakları)
+**Dosyalama:** içerik grubu klasörleri (`00-profil`, `A-rehber-burokrasi`, `B-topluluk-forum`, `C-yasam-altyapisi`, `D-marka-usp`) — her `gun-XX/` içinde görsel + `PAYLAS.txt`
 
 ### 9.1 Bugün yap (paylaşımdan önce — 20 dk)
 
