@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 import random
 import string
 import shutil
+from pymongo import ReturnDocument
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -440,29 +441,56 @@ async def upload_inspection_photo(
 
 @api_router.post("/inspections/{inspection_id}/complete-step")
 async def complete_step(inspection_id: str, step_name: str, notes: str = ""):
-    await db.inspection_progress.update_one(
-        {"inspection_id": inspection_id, "steps.step_name": step_name},
-        {"$set": {"steps.$.completed": True, "steps.$.notes": notes}}
-    )
-    
-    # Move to next step
     progress = await db.inspection_progress.find_one({"inspection_id": inspection_id}, {"_id": 0})
+    if not progress:
+        raise HTTPException(status_code=404, detail="Progress not found")
+
     current = progress["current_step"]
-    if current < len(INSPECTION_STEPS) - 1:
-        await db.inspection_progress.update_one(
-            {"inspection_id": inspection_id},
-            {"$set": {"current_step": current + 1}}
-        )
+    steps = progress.get("steps", [])
+    if current >= len(steps):
+        raise HTTPException(status_code=400, detail="Inspection progress is invalid")
+
+    expected_step = steps[current]["step_name"]
+    if step_name != expected_step:
+        raise HTTPException(status_code=400, detail="Step is not the current inspection step")
+
+    update = {"$set": {"steps.$.completed": True, "steps.$.notes": notes}}
+    if current < len(steps) - 1:
+        update["$inc"] = {"current_step": 1}
+
+    result = await db.inspection_progress.update_one(
+        {
+            "inspection_id": inspection_id,
+            "current_step": current,
+            "steps.step_name": step_name
+        },
+        update
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=409, detail="Inspection progress changed, please retry")
     
     return {"message": "Step completed"}
 
 @api_router.post("/inspections/{inspection_id}/submit-report")
 async def submit_report(inspection_id: str, report: InspectionReportCreate):
-    inspection = await db.inspections.find_one({"id": inspection_id}, {"_id": 0})
-    if not inspection:
-        raise HTTPException(status_code=404, detail="Inspection not found")
-    
     completed_at = datetime.now(timezone.utc).isoformat()
+
+    inspection = await db.inspections.find_one_and_update(
+        {"id": inspection_id, "status": "in_progress"},
+        {"$set": {"status": "completed", "completed_at": completed_at}},
+        projection={"_id": 0},
+        return_document=ReturnDocument.BEFORE
+    )
+    if not inspection:
+        existing_inspection = await db.inspections.find_one({"id": inspection_id}, {"_id": 0})
+        if not existing_inspection:
+            raise HTTPException(status_code=404, detail="Inspection not found")
+
+        existing_report = await db.reports.find_one({"inspection_id": inspection_id}, {"_id": 0})
+        if existing_inspection.get("status") == "completed" and existing_report:
+            return {"message": "Report already submitted", "report_id": existing_report["id"]}
+
+        raise HTTPException(status_code=400, detail="Inspection is not ready for report submission")
     
     # Create report document
     report_doc = {
@@ -477,12 +505,6 @@ async def submit_report(inspection_id: str, report: InspectionReportCreate):
         "created_at": completed_at
     }
     await db.reports.insert_one(report_doc)
-    
-    # Update inspection status
-    await db.inspections.update_one(
-        {"id": inspection_id},
-        {"$set": {"status": "completed", "completed_at": completed_at}}
-    )
     
     # Update inspector stats
     await db.inspector_profiles.update_one(
