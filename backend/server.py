@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import ReturnDocument
 import os
 import logging
 from pathlib import Path
@@ -331,6 +332,7 @@ async def get_available_inspections(inspector_lat: float = 41.8781, inspector_ln
         distance = ((seller_lat - inspector_lat)**2 + (seller_lng - inspector_lng)**2)**0.5 * 69
         if distance <= radius:
             inspection["distance_miles"] = round(distance, 1)
+            inspection.pop("security_code", None)
             nearby.append(inspection)
     
     return sorted(nearby, key=lambda x: x["distance_miles"])
@@ -348,10 +350,14 @@ async def accept_inspection(inspection_id: str, inspector_id: str):
     if not inspector:
         raise HTTPException(status_code=404, detail="Inspector not found")
     
+    inspector_profile = await db.inspector_profiles.find_one({"user_id": inspector_id}, {"_id": 0})
+    if not inspector_profile or not inspector_profile.get("id_verified"):
+        raise HTTPException(status_code=403, detail="Inspector ID verification required")
+    
     accepted_at = datetime.now(timezone.utc).isoformat()
     
-    await db.inspections.update_one(
-        {"id": inspection_id},
+    result = await db.inspections.update_one(
+        {"id": inspection_id, "status": "pending"},
         {"$set": {
             "status": "accepted",
             "inspector_id": inspector_id,
@@ -359,6 +365,8 @@ async def accept_inspection(inspection_id: str, inspector_id: str):
             "accepted_at": accepted_at
         }}
     )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=400, detail="Inspection already accepted")
     
     # Notify buyer
     notification = {
@@ -385,25 +393,38 @@ async def verify_security_code(inspection_id: str, code: str):
     if inspection["security_code"] != code:
         raise HTTPException(status_code=400, detail="Invalid security code")
     
-    await db.inspections.update_one(
-        {"id": inspection_id},
-        {"$set": {"status": "in_progress"}}
-    )
-    
-    # Create inspection progress document with steps
     steps = [InspectionStep(
         step_name=step["step_name"],
         description=step["description"],
         required_photos=step["required_photos"]
     ).model_dump() for step in INSPECTION_STEPS]
     
-    progress_doc = {
-        "inspection_id": inspection_id,
-        "steps": steps,
-        "current_step": 0,
-        "started_at": datetime.now(timezone.utc).isoformat()
-    }
-    await db.inspection_progress.insert_one(progress_doc)
+    if inspection["status"] == "in_progress":
+        existing_progress = await db.inspection_progress.find_one({"inspection_id": inspection_id}, {"_id": 0})
+        if existing_progress:
+            return {"message": "Code already verified, inspection in progress", "steps": INSPECTION_STEPS}
+    elif inspection["status"] != "accepted":
+        raise HTTPException(status_code=400, detail="Inspection must be accepted before verification")
+    
+    updated = await db.inspections.find_one_and_update(
+        {"id": inspection_id, "status": "accepted", "security_code": code},
+        {"$set": {"status": "in_progress"}},
+        projection={"_id": 0},
+        return_document=ReturnDocument.AFTER
+    )
+    if not updated and inspection["status"] != "in_progress":
+        raise HTTPException(status_code=400, detail="Inspection must be accepted before verification")
+    
+    await db.inspection_progress.update_one(
+        {"inspection_id": inspection_id},
+        {"$setOnInsert": {
+            "inspection_id": inspection_id,
+            "steps": steps,
+            "current_step": 0,
+            "started_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
     
     return {"message": "Code verified, inspection started", "steps": INSPECTION_STEPS}
 
@@ -440,13 +461,26 @@ async def upload_inspection_photo(
 
 @api_router.post("/inspections/{inspection_id}/complete-step")
 async def complete_step(inspection_id: str, step_name: str, notes: str = ""):
+    progress = await db.inspection_progress.find_one({"inspection_id": inspection_id}, {"_id": 0})
+    if not progress:
+        raise HTTPException(status_code=404, detail="Progress not found")
+    
+    step_index = next((i for i, step in enumerate(progress["steps"]) if step["step_name"] == step_name), None)
+    if step_index is None:
+        raise HTTPException(status_code=404, detail="Step not found")
+    
+    current = progress["current_step"]
+    if progress["steps"][step_index].get("completed"):
+        return {"message": "Step already completed"}
+    if step_index != current:
+        raise HTTPException(status_code=400, detail="Only the current step can be completed")
+    
     await db.inspection_progress.update_one(
         {"inspection_id": inspection_id, "steps.step_name": step_name},
         {"$set": {"steps.$.completed": True, "steps.$.notes": notes}}
     )
     
     # Move to next step
-    progress = await db.inspection_progress.find_one({"inspection_id": inspection_id}, {"_id": 0})
     current = progress["current_step"]
     if current < len(INSPECTION_STEPS) - 1:
         await db.inspection_progress.update_one(
@@ -461,8 +495,27 @@ async def submit_report(inspection_id: str, report: InspectionReportCreate):
     inspection = await db.inspections.find_one({"id": inspection_id}, {"_id": 0})
     if not inspection:
         raise HTTPException(status_code=404, detail="Inspection not found")
+    if inspection["status"] == "completed":
+        existing_report = await db.reports.find_one({"inspection_id": inspection_id}, {"_id": 0})
+        if existing_report:
+            return {"message": "Report already submitted", "report_id": existing_report["id"]}
+        raise HTTPException(status_code=400, detail="Report already submitted")
+    if inspection["status"] != "in_progress":
+        raise HTTPException(status_code=400, detail="Inspection must be in progress before submitting a report")
     
     completed_at = datetime.now(timezone.utc).isoformat()
+    updated_inspection = await db.inspections.find_one_and_update(
+        {"id": inspection_id, "status": "in_progress"},
+        {"$set": {"status": "completed", "completed_at": completed_at}},
+        projection={"_id": 0},
+        return_document=ReturnDocument.AFTER
+    )
+    if not updated_inspection:
+        existing_report = await db.reports.find_one({"inspection_id": inspection_id}, {"_id": 0})
+        if existing_report:
+            return {"message": "Report already submitted", "report_id": existing_report["id"]}
+        raise HTTPException(status_code=400, detail="Report already submitted")
+    inspection = updated_inspection
     
     # Create report document
     report_doc = {
@@ -477,12 +530,6 @@ async def submit_report(inspection_id: str, report: InspectionReportCreate):
         "created_at": completed_at
     }
     await db.reports.insert_one(report_doc)
-    
-    # Update inspection status
-    await db.inspections.update_one(
-        {"id": inspection_id},
-        {"$set": {"status": "completed", "completed_at": completed_at}}
-    )
     
     # Update inspector stats
     await db.inspector_profiles.update_one(
