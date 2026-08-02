@@ -350,8 +350,8 @@ async def accept_inspection(inspection_id: str, inspector_id: str):
     
     accepted_at = datetime.now(timezone.utc).isoformat()
     
-    await db.inspections.update_one(
-        {"id": inspection_id},
+    update_result = await db.inspections.update_one(
+        {"id": inspection_id, "status": "pending"},
         {"$set": {
             "status": "accepted",
             "inspector_id": inspector_id,
@@ -359,6 +359,8 @@ async def accept_inspection(inspection_id: str, inspector_id: str):
             "accepted_at": accepted_at
         }}
     )
+    if update_result.modified_count == 0:
+        raise HTTPException(status_code=400, detail="Inspection already accepted")
     
     # Notify buyer
     notification = {
@@ -385,11 +387,6 @@ async def verify_security_code(inspection_id: str, code: str):
     if inspection["security_code"] != code:
         raise HTTPException(status_code=400, detail="Invalid security code")
     
-    await db.inspections.update_one(
-        {"id": inspection_id},
-        {"$set": {"status": "in_progress"}}
-    )
-    
     # Create inspection progress document with steps
     steps = [InspectionStep(
         step_name=step["step_name"],
@@ -403,7 +400,29 @@ async def verify_security_code(inspection_id: str, code: str):
         "current_step": 0,
         "started_at": datetime.now(timezone.utc).isoformat()
     }
-    await db.inspection_progress.insert_one(progress_doc)
+
+    if inspection["status"] == "in_progress":
+        progress = await db.inspection_progress.find_one({"inspection_id": inspection_id}, {"_id": 0})
+        if progress:
+            return {"message": "Code already verified, inspection started", "steps": progress["steps"]}
+    elif inspection["status"] != "accepted":
+        raise HTTPException(status_code=400, detail="Inspection is not ready for code verification")
+    else:
+        update_result = await db.inspections.update_one(
+            {"id": inspection_id, "status": "accepted"},
+            {"$set": {"status": "in_progress"}}
+        )
+        if update_result.modified_count == 0:
+            progress = await db.inspection_progress.find_one({"inspection_id": inspection_id}, {"_id": 0})
+            if progress:
+                return {"message": "Code already verified, inspection started", "steps": progress["steps"]}
+            raise HTTPException(status_code=400, detail="Inspection is not ready for code verification")
+
+    await db.inspection_progress.update_one(
+        {"inspection_id": inspection_id},
+        {"$setOnInsert": progress_doc},
+        upsert=True
+    )
     
     return {"message": "Code verified, inspection started", "steps": INSPECTION_STEPS}
 
