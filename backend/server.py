@@ -340,18 +340,21 @@ async def accept_inspection(inspection_id: str, inspector_id: str):
     inspection = await db.inspections.find_one({"id": inspection_id}, {"_id": 0})
     if not inspection:
         raise HTTPException(status_code=404, detail="Inspection not found")
-    
-    if inspection["status"] != "pending":
-        raise HTTPException(status_code=400, detail="Inspection already accepted")
-    
+
     inspector = await db.users.find_one({"id": inspector_id}, {"_id": 0})
     if not inspector:
         raise HTTPException(status_code=404, detail="Inspector not found")
+    if inspector.get("user_type") != "inspector":
+        raise HTTPException(status_code=400, detail="User is not an inspector")
+
+    inspector_profile = await db.inspector_profiles.find_one({"user_id": inspector_id}, {"_id": 0})
+    if not inspector_profile or not inspector_profile.get("id_verified"):
+        raise HTTPException(status_code=403, detail="Inspector ID verification required")
     
     accepted_at = datetime.now(timezone.utc).isoformat()
     
-    await db.inspections.update_one(
-        {"id": inspection_id},
+    result = await db.inspections.update_one(
+        {"id": inspection_id, "status": "pending"},
         {"$set": {
             "status": "accepted",
             "inspector_id": inspector_id,
@@ -359,6 +362,8 @@ async def accept_inspection(inspection_id: str, inspector_id: str):
             "accepted_at": accepted_at
         }}
     )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=400, detail="Inspection already accepted")
     
     # Notify buyer
     notification = {
@@ -384,11 +389,19 @@ async def verify_security_code(inspection_id: str, code: str):
     
     if inspection["security_code"] != code:
         raise HTTPException(status_code=400, detail="Invalid security code")
+    if inspection["status"] == "in_progress":
+        progress = await db.inspection_progress.find_one({"inspection_id": inspection_id}, {"_id": 0})
+        if progress:
+            return {"message": "Code already verified, inspection started", "steps": INSPECTION_STEPS}
+    if inspection["status"] != "accepted":
+        raise HTTPException(status_code=400, detail="Inspection is not ready to start")
     
-    await db.inspections.update_one(
-        {"id": inspection_id},
+    result = await db.inspections.update_one(
+        {"id": inspection_id, "status": "accepted"},
         {"$set": {"status": "in_progress"}}
     )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=400, detail="Inspection is not ready to start")
     
     # Create inspection progress document with steps
     steps = [InspectionStep(
@@ -440,14 +453,32 @@ async def upload_inspection_photo(
 
 @api_router.post("/inspections/{inspection_id}/complete-step")
 async def complete_step(inspection_id: str, step_name: str, notes: str = ""):
-    await db.inspection_progress.update_one(
+    progress = await db.inspection_progress.find_one({"inspection_id": inspection_id}, {"_id": 0})
+    if not progress:
+        raise HTTPException(status_code=404, detail="Progress not found")
+
+    current = progress["current_step"]
+    if current >= len(progress["steps"]):
+        raise HTTPException(status_code=400, detail="Inspection steps are already complete")
+
+    requested_step = next((step for step in progress["steps"] if step["step_name"] == step_name), None)
+    if not requested_step:
+        raise HTTPException(status_code=400, detail="Invalid inspection step")
+    if requested_step.get("completed"):
+        return {"message": "Step already completed"}
+
+    current_step = progress["steps"][current]
+    if current_step["step_name"] != step_name:
+        raise HTTPException(status_code=400, detail="Step must be completed in order")
+
+    result = await db.inspection_progress.update_one(
         {"inspection_id": inspection_id, "steps.step_name": step_name},
         {"$set": {"steps.$.completed": True, "steps.$.notes": notes}}
     )
-    
-    # Move to next step
-    progress = await db.inspection_progress.find_one({"inspection_id": inspection_id}, {"_id": 0})
-    current = progress["current_step"]
+    if result.modified_count == 0:
+        raise HTTPException(status_code=400, detail="Step could not be completed")
+
+    # Move to next step without allowing repeated requests to skip ahead.
     if current < len(INSPECTION_STEPS) - 1:
         await db.inspection_progress.update_one(
             {"inspection_id": inspection_id},
@@ -461,8 +492,20 @@ async def submit_report(inspection_id: str, report: InspectionReportCreate):
     inspection = await db.inspections.find_one({"id": inspection_id}, {"_id": 0})
     if not inspection:
         raise HTTPException(status_code=404, detail="Inspection not found")
+    if inspection["status"] == "completed":
+        existing_report = await db.reports.find_one({"inspection_id": inspection_id}, {"_id": 0})
+        if existing_report:
+            return {"message": "Report already submitted", "report_id": existing_report["id"]}
+    if inspection["status"] != "in_progress" or not inspection.get("inspector_id"):
+        raise HTTPException(status_code=400, detail="Inspection is not ready for report submission")
     
     completed_at = datetime.now(timezone.utc).isoformat()
+    result = await db.inspections.update_one(
+        {"id": inspection_id, "status": "in_progress"},
+        {"$set": {"status": "completed", "completed_at": completed_at}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=400, detail="Inspection is not ready for report submission")
     
     # Create report document
     report_doc = {
@@ -477,12 +520,6 @@ async def submit_report(inspection_id: str, report: InspectionReportCreate):
         "created_at": completed_at
     }
     await db.reports.insert_one(report_doc)
-    
-    # Update inspection status
-    await db.inspections.update_one(
-        {"id": inspection_id},
-        {"$set": {"status": "completed", "completed_at": completed_at}}
-    )
     
     # Update inspector stats
     await db.inspector_profiles.update_one(

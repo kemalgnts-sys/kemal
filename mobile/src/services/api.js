@@ -71,9 +71,7 @@ export const inspectionsApi = {
       name: `${stepName}_${Date.now()}.jpg`,
     });
     
-    const response = await api.post(`/inspections/${inspectionId}/upload-photo`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    const response = await axios.post(`${API_BASE_URL}/inspections/${inspectionId}/upload-photo`, formData);
     return response.data;
   },
   
