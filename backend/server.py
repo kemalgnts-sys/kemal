@@ -7,7 +7,7 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 import uuid
 from datetime import datetime, timezone
 import random
@@ -177,6 +177,9 @@ INSPECTION_STEPS = [
 def generate_security_code():
     return ''.join(random.choices(string.digits, k=6))
 
+def redact_security_code(inspection: Dict[str, Any]) -> Dict[str, Any]:
+    return {k: v for k, v in inspection.items() if k != "security_code"}
+
 # ============== AUTH ROUTES ==============
 
 @api_router.post("/auth/register", response_model=UserResponse)
@@ -330,8 +333,9 @@ async def get_available_inspections(inspector_lat: float = 41.8781, inspector_ln
         seller_lng = inspection["seller"]["lng"]
         distance = ((seller_lat - inspector_lat)**2 + (seller_lng - inspector_lng)**2)**0.5 * 69
         if distance <= radius:
-            inspection["distance_miles"] = round(distance, 1)
-            nearby.append(inspection)
+            inspector_view = redact_security_code(inspection)
+            inspector_view["distance_miles"] = round(distance, 1)
+            nearby.append(inspector_view)
     
     return sorted(nearby, key=lambda x: x["distance_miles"])
 
@@ -374,7 +378,7 @@ async def accept_inspection(inspection_id: str, inspector_id: str):
     await db.notifications.insert_one(notification)
     
     updated = await db.inspections.find_one({"id": inspection_id}, {"_id": 0})
-    return updated
+    return redact_security_code(updated)
 
 @api_router.post("/inspections/{inspection_id}/verify-code")
 async def verify_security_code(inspection_id: str, code: str):
@@ -582,7 +586,7 @@ async def get_inspector_jobs(inspector_id: str):
         {"inspector_id": inspector_id},
         {"_id": 0}
     ).to_list(100)
-    return jobs
+    return [redact_security_code(job) for job in jobs]
 
 # ============== HEALTH CHECK ==============
 
