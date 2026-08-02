@@ -7,6 +7,7 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
+from pymongo.errors import DuplicateKeyError
 from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
@@ -347,11 +348,17 @@ async def accept_inspection(inspection_id: str, inspector_id: str):
     inspector = await db.users.find_one({"id": inspector_id}, {"_id": 0})
     if not inspector:
         raise HTTPException(status_code=404, detail="Inspector not found")
+    if inspector.get("user_type") != "inspector":
+        raise HTTPException(status_code=403, detail="Only inspectors can accept inspections")
+
+    inspector_profile = await db.inspector_profiles.find_one({"user_id": inspector_id}, {"_id": 0})
+    if not inspector_profile or not inspector_profile.get("id_verified"):
+        raise HTTPException(status_code=403, detail="Inspector must be verified to accept inspections")
     
     accepted_at = datetime.now(timezone.utc).isoformat()
     
-    await db.inspections.update_one(
-        {"id": inspection_id},
+    update_result = await db.inspections.update_one(
+        {"id": inspection_id, "status": "pending"},
         {"$set": {
             "status": "accepted",
             "inspector_id": inspector_id,
@@ -359,6 +366,8 @@ async def accept_inspection(inspection_id: str, inspector_id: str):
             "accepted_at": accepted_at
         }}
     )
+    if update_result.matched_count == 0:
+        raise HTTPException(status_code=400, detail="Inspection already accepted")
     
     # Notify buyer
     notification = {
@@ -384,13 +393,22 @@ async def verify_security_code(inspection_id: str, code: str):
     
     if inspection["security_code"] != code:
         raise HTTPException(status_code=400, detail="Invalid security code")
+
+    if inspection["status"] == "completed":
+        raise HTTPException(status_code=400, detail="Inspection already completed")
+    if inspection["status"] == "cancelled":
+        raise HTTPException(status_code=400, detail="Inspection has been cancelled")
+    if inspection["status"] not in ("accepted", "in_progress"):
+        raise HTTPException(status_code=400, detail="Inspection must be accepted before starting")
     
-    await db.inspections.update_one(
-        {"id": inspection_id},
+    update_result = await db.inspections.update_one(
+        {"id": inspection_id, "status": {"$in": ["accepted", "in_progress"]}},
         {"$set": {"status": "in_progress"}}
     )
+    if update_result.matched_count == 0:
+        raise HTTPException(status_code=400, detail="Inspection cannot be started")
     
-    # Create inspection progress document with steps
+    # Create progress once; repeated code verification is safe for network retries.
     steps = [InspectionStep(
         step_name=step["step_name"],
         description=step["description"],
@@ -398,14 +416,27 @@ async def verify_security_code(inspection_id: str, code: str):
     ).model_dump() for step in INSPECTION_STEPS]
     
     progress_doc = {
+        "_id": f"progress:{inspection_id}",
         "inspection_id": inspection_id,
         "steps": steps,
         "current_step": 0,
         "started_at": datetime.now(timezone.utc).isoformat()
     }
-    await db.inspection_progress.insert_one(progress_doc)
+    try:
+        await db.inspection_progress.update_one(
+            {"inspection_id": inspection_id},
+            {"$setOnInsert": progress_doc},
+            upsert=True
+        )
+    except DuplicateKeyError:
+        # Another request created the deterministic progress row first.
+        pass
+
+    progress = await db.inspection_progress.find_one({"inspection_id": inspection_id}, {"_id": 0})
+    if not progress:
+        raise HTTPException(status_code=500, detail="Inspection progress could not be initialized")
     
-    return {"message": "Code verified, inspection started", "steps": INSPECTION_STEPS}
+    return {"message": "Code verified, inspection started", "steps": progress["steps"]}
 
 @api_router.get("/inspections/{inspection_id}/progress")
 async def get_inspection_progress(inspection_id: str):
@@ -440,15 +471,32 @@ async def upload_inspection_photo(
 
 @api_router.post("/inspections/{inspection_id}/complete-step")
 async def complete_step(inspection_id: str, step_name: str, notes: str = ""):
-    await db.inspection_progress.update_one(
+    progress = await db.inspection_progress.find_one({"inspection_id": inspection_id}, {"_id": 0})
+    if not progress:
+        raise HTTPException(status_code=404, detail="Progress not found")
+
+    step_index = next(
+        (index for index, step in enumerate(progress["steps"]) if step["step_name"] == step_name),
+        None
+    )
+    if step_index is None:
+        raise HTTPException(status_code=404, detail="Inspection step not found")
+
+    step = progress["steps"][step_index]
+    already_completed = step.get("completed", False)
+    if step_index != progress["current_step"] and not already_completed:
+        raise HTTPException(status_code=400, detail="Only the current inspection step can be completed")
+
+    update_result = await db.inspection_progress.update_one(
         {"inspection_id": inspection_id, "steps.step_name": step_name},
         {"$set": {"steps.$.completed": True, "steps.$.notes": notes}}
     )
+    if update_result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Inspection step not found")
     
     # Move to next step
-    progress = await db.inspection_progress.find_one({"inspection_id": inspection_id}, {"_id": 0})
     current = progress["current_step"]
-    if current < len(INSPECTION_STEPS) - 1:
+    if not already_completed and current < len(INSPECTION_STEPS) - 1:
         await db.inspection_progress.update_one(
             {"inspection_id": inspection_id},
             {"$set": {"current_step": current + 1}}
