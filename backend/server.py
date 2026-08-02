@@ -177,6 +177,12 @@ INSPECTION_STEPS = [
 def generate_security_code():
     return ''.join(random.choices(string.digits, k=6))
 
+def inspector_inspection_response(inspection: dict) -> dict:
+    response = dict(inspection)
+    response.pop("_id", None)
+    response.pop("security_code", None)
+    return response
+
 # ============== AUTH ROUTES ==============
 
 @api_router.post("/auth/register", response_model=UserResponse)
@@ -331,7 +337,7 @@ async def get_available_inspections(inspector_lat: float = 41.8781, inspector_ln
         distance = ((seller_lat - inspector_lat)**2 + (seller_lng - inspector_lng)**2)**0.5 * 69
         if distance <= radius:
             inspection["distance_miles"] = round(distance, 1)
-            nearby.append(inspection)
+            nearby.append(inspector_inspection_response(inspection))
     
     return sorted(nearby, key=lambda x: x["distance_miles"])
 
@@ -374,7 +380,7 @@ async def accept_inspection(inspection_id: str, inspector_id: str):
     await db.notifications.insert_one(notification)
     
     updated = await db.inspections.find_one({"id": inspection_id}, {"_id": 0})
-    return updated
+    return inspector_inspection_response(updated)
 
 @api_router.post("/inspections/{inspection_id}/verify-code")
 async def verify_security_code(inspection_id: str, code: str):
@@ -582,7 +588,7 @@ async def get_inspector_jobs(inspector_id: str):
         {"inspector_id": inspector_id},
         {"_id": 0}
     ).to_list(100)
-    return jobs
+    return [inspector_inspection_response(job) for job in jobs]
 
 # ============== HEALTH CHECK ==============
 
