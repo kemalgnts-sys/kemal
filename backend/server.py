@@ -13,6 +13,10 @@ from datetime import datetime, timezone
 import random
 import string
 import shutil
+import base64
+import hashlib
+import hmac
+import secrets
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -177,6 +181,44 @@ INSPECTION_STEPS = [
 def generate_security_code():
     return ''.join(random.choices(string.digits, k=6))
 
+PASSWORD_HASH_ALGORITHM = "pbkdf2_sha256"
+PASSWORD_HASH_ITERATIONS = 600000
+
+def hash_password(password: str) -> str:
+    salt = secrets.token_urlsafe(16)
+    digest = hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode("utf-8"),
+        salt.encode("utf-8"),
+        PASSWORD_HASH_ITERATIONS,
+    )
+    encoded_digest = base64.b64encode(digest).decode("ascii")
+    return f"{PASSWORD_HASH_ALGORITHM}${PASSWORD_HASH_ITERATIONS}${salt}${encoded_digest}"
+
+def verify_password(password: str, stored_password: str) -> bool:
+    parts = stored_password.split("$")
+    if len(parts) != 4 or parts[0] != PASSWORD_HASH_ALGORITHM:
+        # Existing deployments may already contain plaintext passwords.
+        return hmac.compare_digest(stored_password, password)
+
+    _, iterations, salt, encoded_digest = parts
+    try:
+        iterations_int = int(iterations)
+        expected_digest = base64.b64decode(encoded_digest.encode("ascii"))
+    except (ValueError, TypeError):
+        return False
+
+    actual_digest = hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode("utf-8"),
+        salt.encode("utf-8"),
+        iterations_int,
+    )
+    return hmac.compare_digest(actual_digest, expected_digest)
+
+def is_hashed_password(stored_password: str) -> bool:
+    return stored_password.startswith(f"{PASSWORD_HASH_ALGORITHM}$")
+
 # ============== AUTH ROUTES ==============
 
 @api_router.post("/auth/register", response_model=UserResponse)
@@ -191,7 +233,7 @@ async def register_user(user: UserCreate):
     user_doc = {
         "id": user_id,
         "email": user.email,
-        "password": user.password,  # In production, hash this!
+        "password": hash_password(user.password),
         "full_name": user.full_name,
         "phone": user.phone,
         "user_type": user.user_type,
@@ -228,8 +270,14 @@ async def register_user(user: UserCreate):
 @api_router.post("/auth/login", response_model=UserResponse)
 async def login_user(credentials: UserLogin):
     user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
-    if not user or user["password"] != credentials.password:
+    if not user or not verify_password(credentials.password, user.get("password", "")):
         raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    if not is_hashed_password(user["password"]):
+        await db.users.update_one(
+            {"id": user["id"]},
+            {"$set": {"password": hash_password(credentials.password)}}
+        )
     
     return UserResponse(
         id=user["id"],
@@ -440,15 +488,30 @@ async def upload_inspection_photo(
 
 @api_router.post("/inspections/{inspection_id}/complete-step")
 async def complete_step(inspection_id: str, step_name: str, notes: str = ""):
-    await db.inspection_progress.update_one(
+    progress = await db.inspection_progress.find_one({"inspection_id": inspection_id}, {"_id": 0})
+    if not progress:
+        raise HTTPException(status_code=404, detail="Progress not found")
+
+    step_index = next(
+        (index for index, step in enumerate(progress["steps"]) if step["step_name"] == step_name),
+        None
+    )
+    if step_index is None:
+        raise HTTPException(status_code=400, detail="Invalid inspection step")
+
+    if progress["steps"][step_index].get("completed"):
+        return {"message": "Step already completed"}
+
+    update_result = await db.inspection_progress.update_one(
         {"inspection_id": inspection_id, "steps.step_name": step_name},
         {"$set": {"steps.$.completed": True, "steps.$.notes": notes}}
     )
+    if update_result.matched_count == 0:
+        raise HTTPException(status_code=400, detail="Invalid inspection step")
     
     # Move to next step
-    progress = await db.inspection_progress.find_one({"inspection_id": inspection_id}, {"_id": 0})
     current = progress["current_step"]
-    if current < len(INSPECTION_STEPS) - 1:
+    if current == step_index and current < len(INSPECTION_STEPS) - 1:
         await db.inspection_progress.update_one(
             {"inspection_id": inspection_id},
             {"$set": {"current_step": current + 1}}
