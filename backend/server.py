@@ -461,6 +461,18 @@ async def submit_report(inspection_id: str, report: InspectionReportCreate):
     inspection = await db.inspections.find_one({"id": inspection_id}, {"_id": 0})
     if not inspection:
         raise HTTPException(status_code=404, detail="Inspection not found")
+
+    if report.inspection_id != inspection_id:
+        raise HTTPException(status_code=400, detail="Report inspection_id does not match inspection")
+
+    existing_report = await db.reports.find_one({"inspection_id": inspection_id}, {"_id": 0})
+    if existing_report:
+        if inspection["status"] == "completed":
+            return {"message": "Report already submitted", "report_id": existing_report["id"]}
+        raise HTTPException(status_code=409, detail="Report already exists for inspection")
+
+    if inspection["status"] != "in_progress":
+        raise HTTPException(status_code=400, detail="Inspection must be in progress before submitting report")
     
     completed_at = datetime.now(timezone.utc).isoformat()
     
@@ -478,11 +490,19 @@ async def submit_report(inspection_id: str, report: InspectionReportCreate):
     }
     await db.reports.insert_one(report_doc)
     
-    # Update inspection status
-    await db.inspections.update_one(
-        {"id": inspection_id},
+    # Only one request may transition the inspection and trigger payout.
+    completion_result = await db.inspections.update_one(
+        {"id": inspection_id, "status": "in_progress"},
         {"$set": {"status": "completed", "completed_at": completed_at}}
     )
+    if completion_result.modified_count != 1:
+        await db.reports.delete_one({"id": report_doc["id"]})
+        current = await db.inspections.find_one({"id": inspection_id}, {"_id": 0})
+        if current and current.get("status") == "completed":
+            existing_report = await db.reports.find_one({"inspection_id": inspection_id}, {"_id": 0})
+            if existing_report:
+                return {"message": "Report already submitted", "report_id": existing_report["id"]}
+        raise HTTPException(status_code=409, detail="Inspection report submission conflict")
     
     # Update inspector stats
     await db.inspector_profiles.update_one(
