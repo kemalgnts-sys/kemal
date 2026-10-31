@@ -1,6 +1,6 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer } from '@react-navigation/native';
+import { DarkTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -10,6 +10,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { t } from './src/i18n';
 import { COLORS } from './src/config';
+import { buildNavigationTheme } from './src/navigation/theme';
+
+const navigationTheme = buildNavigationTheme(DarkTheme, {
+  primary: COLORS.primary,
+  background: COLORS.background,
+  card: COLORS.card,
+  text: COLORS.text,
+  border: COLORS.border,
+  notification: COLORS.primary,
+});
 
 // Screens
 import { WelcomeScreen, LoginScreen, RegisterScreen } from './src/screens/AuthScreens';
@@ -122,19 +132,7 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <AuthProvider>
-          <NavigationContainer
-            theme={{
-              dark: true,
-              colors: {
-                primary: COLORS.primary,
-                background: COLORS.background,
-                card: COLORS.card,
-                text: COLORS.text,
-                border: COLORS.border,
-                notification: COLORS.primary,
-              },
-            }}
-          >
+          <NavigationContainer theme={navigationTheme}>
             <StatusBar style="light" />
             <AppNavigator />
           </NavigationContainer>
